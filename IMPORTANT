@@ -1,0 +1,32 @@
+Jumping (and possibly other) problems:
+- it's good from 30fps and up, at least
+
+For character's hitboxes, the usual is:
+- 3 pixels off for width; 4 pixels off for height
+
+
+
+If ever upgrading Farseer:
+- remember that there's a bug in world.RayCast where it should return
+	return rayCastInput.MaxFraction;
+
+- there's a bug in Contact.cs in "if (wasTouching == false && touching)" where it should also check for
+	if (FixtureA != null) and if (FixtureB != null)
+before checking whether the respective OnCollision functions are null
+
+- I added the following in Body.Disposed() in if (!IsDisposed)
+		ContactEdge contactEdge = ContactList;
+                Contact contact;
+                while (contactEdge != null && (contact = contactEdge.Contact) != null)
+                {
+                    //Report the separation to both participants:
+                    if (contact.FixtureA != null && contact.FixtureA.OnSeparation != null)
+                        contact.FixtureA.OnSeparation(contact.FixtureA, contact.FixtureB);
+
+                    //Reverse the order of the reported fixtures. The first fixture is always the one that the
+                    //user subscribed to.
+                    if (contact.FixtureB != null && contact.FixtureB.OnSeparation != null)
+                        contact.FixtureB.OnSeparation(contact.FixtureB, contact.FixtureA);
+
+                    contactEdge = contactEdge.Next;
+                }

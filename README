@@ -1,0 +1,30 @@
+Super Team Fighters Unite!
+
+There is TODO describing what I'm currently working on.
+In the meantime, there's a prototype of the game with multiplayer functionality but no way to win and no way to change levels.
+
+XNA Game Studio is required to compile the source.
+XNA 4.0 Redistributable and the .NET framework are required to run the game.
+
+Up to four Xbox 360 controllers can be used for four different players.
+Otherwise, keyboard controls are
+For player 1:
+- Arrow keys for movement
+- N is jump
+- M is gun
+- , is sword
+
+For player 2:
+- WASD for movement
+- Tab is jump
+- Q is gun
+- 1 is sword
+
++ adds a player and - subtracts a player.
+
+Some more keys that do stuff are
+- F1: hides debug info
+- F4: fullscreen
+- F5: v-sync
+- F6: change resolution but only in fullscreen
+- F10: show the physics debug view

@@ -1,0 +1,278 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectGuid>{85EE2908-0658-44B7-B71D-C3C8F8DBFD44}</ProjectGuid>
+    <ProjectTypeGuids>{6D335F3A-9D43-41b4-9D22-F6F17C4BE596};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <OutputType>Exe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>STFU</RootNamespace>
+    <AssemblyName>STFU</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+    <XnaFrameworkVersion>v4.0</XnaFrameworkVersion>
+    <XnaPlatform>Windows</XnaPlatform>
+    <XnaProfile>HiDef</XnaProfile>
+    <XnaCrossPlatformGroupID>d695ab11-8c21-4f76-bb29-de0425bd37a8</XnaCrossPlatformGroupID>
+    <XnaOutputType>Game</XnaOutputType>
+    <ApplicationIcon>Game.ico</ApplicationIcon>
+    <Thumbnail>GameThumbnail.png</Thumbnail>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <PublishUrl>D:\tmp\multiplayerplatformer\prototype_2\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <AutorunEnabled>true</AutorunEnabled>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.0</ApplicationVersion>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <PublishWizardCompleted>true</PublishWizardCompleted>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\x86\Debug</OutputPath>
+    <DefineConstants>DEBUG;TRACE;WINDOWS</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <NoStdLib>true</NoStdLib>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <PlatformTarget>x86</PlatformTarget>
+    <XnaCompressContent>false</XnaCompressContent>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\x86\Release</OutputPath>
+    <DefineConstants>TRACE;WINDOWS</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <NoStdLib>true</NoStdLib>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <PlatformTarget>x86</PlatformTarget>
+    <XnaCompressContent>true</XnaCompressContent>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
+  <PropertyGroup>
+    <ManifestCertificateThumbprint>866D48056A68C09E8449204C4AA4624E65F88DCA</ManifestCertificateThumbprint>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ManifestKeyFile>FarseerPlatformer_TemporaryKey.pfx</ManifestKeyFile>
+  </PropertyGroup>
+  <PropertyGroup>
+    <GenerateManifests>true</GenerateManifests>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignManifests>true</SignManifests>
+  </PropertyGroup>
+  <PropertyGroup />
+  <PropertyGroup />
+  <PropertyGroup>
+    <NoWin32Manifest>true</NoWin32Manifest>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.Xna.Framework.Game, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.Xna.Framework.Graphics, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.Xna.Framework.GamerServices, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.Xna.Framework.Xact, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.Xna.Framework.Video, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.Xna.Framework.Avatar, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.Xna.Framework.Net, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.Xna.Framework.Storage, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="mscorlib">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Xml">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Core">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Xml.Linq">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Net">
+      <Private>False</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Code\Controller\Controller.cs" />
+    <Compile Include="Code\Controller\ControllerManager.cs" />
+    <Compile Include="Code\Controller\Enemies\BatEnemyController.cs" />
+    <Compile Include="Code\Controller\Enemies\WalkerEnemyController.cs" />
+    <Compile Include="Code\Controller\EnemyController.cs" />
+    <Compile Include="Code\Controller\PlayerController.cs" />
+    <Compile Include="Code\EnemyFactory.cs" />
+    <Compile Include="Code\GameConstants.cs" />
+    <Compile Include="Code\GameVariables.cs" />
+    <Compile Include="Code\Model\CheckpointTile.cs" />
+    <Compile Include="Code\Model\FallingPlatformTile.cs" />
+    <Compile Include="Code\Model\Bullet.cs" />
+    <Compile Include="Code\Model\CircularMovingPlatform.cs" />
+    <Compile Include="Code\Model\Enemies\BatEnemy.cs" />
+    <Compile Include="Code\Model\Enemies\EnemyBehavior.cs" />
+    <Compile Include="Code\Model\Enemies\EnemyMovement.cs" />
+    <Compile Include="Code\Model\Enemies\EnemyVision.cs" />
+    <Compile Include="Code\Model\LinearMovingPlatform.cs" />
+    <Compile Include="Code\Model\MovingPlatformTile.cs" />
+    <Compile Include="Code\Model\StaticPlatformTile.cs" />
+    <Compile Include="Code\Model\PlatformTile.cs" />
+    <Compile Include="Code\Model\Physics\PhysicsLine.cs" />
+    <Compile Include="Code\Model\SpikeTile.cs" />
+    <Compile Include="Code\Model\PlayerBullet.cs" />
+    <Compile Include="Code\Model\Enemies\WalkerEnemy.cs" />
+    <Compile Include="Code\Model\Enemy.cs" />
+    <Compile Include="Code\Model\EnemyEvent.cs" />
+    <Compile Include="Code\Model\Entity.cs" />
+    <Compile Include="Code\Model\EntityEvent.cs" />
+    <Compile Include="Code\Model\EntityManager.cs" />
+    <Compile Include="Code\Model\GroundTile.cs" />
+    <Compile Include="Code\Model\PlayerWeapon.cs" />
+    <Compile Include="Code\Model\Health.cs" />
+    <Compile Include="Code\Model\LivingEntity.cs" />
+    <Compile Include="Code\Model\Map.cs" />
+    <Compile Include="Code\Model\Physics\PhysicsCharacter.cs" />
+    <Compile Include="Code\Model\Physics\EnemyPhysicsCharacter.cs" />
+    <Compile Include="Code\Model\Physics\PhysicsContainer.cs" />
+    <Compile Include="Code\Model\Physics\PlayerPhysicsCharacter.cs" />
+    <Compile Include="Code\Model\Player.cs" />
+    <Compile Include="Code\Model\Physics\CompositePhysicsCharacter.cs" />
+    <Compile Include="Code\Model\Physics\CompositePhysicsObject.cs" />
+    <Compile Include="Code\Model\Physics\ConvertUnits.cs" />
+    <Compile Include="Code\Model\Physics\PhysicsObject.cs" />
+    <Compile Include="Code\Model\PlayerEvent.cs" />
+    <Compile Include="Code\Model\WallTile.cs" />
+    <Compile Include="Code\Model\Weapon.cs" />
+    <Compile Include="Code\Other\Timer.cs" />
+    <Compile Include="Code\Other\SpriteSheet.cs" />
+    <Compile Include="Code\PhysicsSystem.cs" />
+    <Compile Include="Code\PlayerFactory.cs" />
+    <Compile Include="Code\View\Animation.cs" />
+    <Compile Include="Code\View\BulletRepresentation.cs" />
+    <Compile Include="Code\View\Camera2D.cs" />
+    <Compile Include="Code\View\DisplayEntity.cs" />
+    <Compile Include="Code\View\Enemies\BatEnemyRepresentation.cs" />
+    <Compile Include="Code\View\Enemies\WalkerEnemyRepresentation.cs" />
+    <Compile Include="Code\View\EnemyRepresentation.cs" />
+    <Compile Include="Code\View\EntityRepresentation.cs" />
+    <Compile Include="Code\View\Frame.cs" />
+    <Compile Include="Code\View\LivingEntityRepresentation.cs" />
+    <Compile Include="Code\View\MapRepresentation.cs" />
+    <Compile Include="Code\View\PlayerRepresentation.cs" />
+    <Compile Include="Code\View\RepresentationManager.cs" />
+    <Compile Include="Code\View\WeaponRepresentation.cs" />
+    <Compile Include="FixedTimeStepSystem.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Game1.cs" />
+    <Compile Include="Code\Model\Physics\SpringPhysicsObject.cs" />
+    <Compile Include="Code\Model\Physics\StaticPhysicsObject.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Game.ico" />
+    <Content Include="GameThumbnail.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\DebugView XNA\DebugView XNA.csproj">
+      <Project>{FC7845FA-13FE-4FF8-822A-A577F3F59B00}</Project>
+      <Name>DebugView XNA</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\EasyConfig\EasyConfig.csproj">
+      <Project>{D08045D5-3635-4A6F-A476-40803FEC6CC3}</Project>
+      <Name>EasyConfig</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Farseer Physics Engine 3.3.1 XNA\Farseer Physics XNA.csproj">
+      <Project>{0A850700-1ABB-4288-A391-6726B90EBEB9}</Project>
+      <Name>Farseer Physics XNA</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\TreeSharp\TreeSharp.csproj">
+      <Project>{8BFDD80E-9E64-4386-B676-ED3CFDF1B095}</Project>
+      <Name>TreeSharp</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\MyDataTypes\MyDataTypes.csproj">
+      <Project>{9D135BA7-7291-440A-899C-900906B078CE}</Project>
+      <Name>MyDataTypes</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\STFUContent\STFUContent.contentproj">
+      <Name>STFUContent %28Content%29</Name>
+      <XnaReferenceType>Content</XnaReferenceType>
+      <Project>{5EF27887-5925-4049-B215-CBF9FB3E05A5}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.0,Profile=Client">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4 Client Profile %28x86 and x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Xna.Framework.4.0">
+      <Visible>False</Visible>
+      <ProductName>Microsoft XNA Framework Redistributable 4.0</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="FarseerPlatformer_TemporaryKey.pfx" />
+    <None Include="GameSettings.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(MSBuildExtensionsPath)\Microsoft\XNA Game Studio\Microsoft.Xna.GameStudio.targets" />
+  <!--
+      To modify your build process, add your task inside one of the targets below and uncomment it. 
+      Other similar extension points exist, see Microsoft.Common.targets.
+      <Target Name="BeforeBuild">
+      </Target>
+      <Target Name="AfterBuild">
+      </Target>
+    -->
+</Project>

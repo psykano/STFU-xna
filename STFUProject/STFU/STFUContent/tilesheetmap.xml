@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<XnaContent>
+<Asset Type="System.Collections.Generic.Dictionary[System.String, Microsoft.Xna.Framework.Rectangle]">
+<Item><Key>ground</Key><Value>0 0 36 36</Value></Item>
+<Item><Key>groundlowerincline</Key><Value>37 0 36 36</Value></Item>
+<Item><Key>groundupperincline</Key><Value>74 0 36 36</Value></Item>
+<Item><Key>fallingplatform</Key><Value>0 37 36 28</Value></Item>
+<Item><Key>movingplatform</Key><Value>0 66 36 28</Value></Item>
+<Item><Key>staticplatform</Key><Value>37 37 36 28</Value></Item>
+<Item><Key>checkpointflag</Key><Value>0 95 32 32</Value></Item>
+<Item><Key>checkpointpole</Key><Value>37 66 32 32</Value></Item>
+<Item><Key>wall</Key><Value>74 37 32 32</Value></Item>
+<Item><Key>spike</Key><Value>70 70 30 30</Value></Item>
+</Asset>
+</XnaContent>

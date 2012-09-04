@@ -1,0 +1,35 @@
+Currently:
+- INI files
+	- on "here ***" in game.cs
+
+- make mines (the exploding kind, not the exploring kind)
+
+- make experience+gold
+	- gold drops on every hit
+	- experience drops when enemy dies
+
+- add more enemies
+
+- add more weapons
+
+
+Eventually:
+- refactor physics classes
+
+- EnemyVision is a bit wonky at times and slow. try using sensors?
+
+- refactor bat and walker enemy classes so they use common method stuff
+
+- what's going on with the maximum layerDepth for different resolutions..?
+
+
+To think about:
+- give players a dash ability?
+
+- make it so player can look down/up to see what's down/up?
+
+- start with armor and then after hit armor comes back after a long 
+cooldown?
+
+- make it so players shoot _through_ each other rather than hit each 
+other with their shots?
