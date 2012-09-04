@@ -69,7 +69,6 @@ namespace STFU
         public Game1()
         {
             // testing ini file *** here
-            /*
             ConfigFile configFile = new ConfigFile(gameSettingsIni);
 
             foreach (KeyValuePair<string, SettingsGroup> group in configFile.SettingGroups)
@@ -83,7 +82,6 @@ namespace STFU
 
                 Console.WriteLine();
             }
-             */
 
             graphics = new GraphicsDeviceManager(this);
             graphics.PreferredBackBufferWidth = 1280; // 1280
