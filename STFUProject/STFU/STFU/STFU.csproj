@@ -261,7 +261,16 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="FarseerPlatformer_TemporaryKey.pfx" />
-    <None Include="GameSettings.ini">
+    <None Include="Settings\EnemySettings.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Settings\PhysicsSettings.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Settings\GameSettings.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Settings\PlayerSettings.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

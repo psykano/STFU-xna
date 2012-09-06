@@ -10,6 +10,7 @@ using System.Text;
 using FarseerPhysics;
 using FarseerPhysics.Dynamics;
 using Microsoft.Xna.Framework;
+using EasyConfig;
 
 namespace STFU
 {
@@ -21,59 +22,77 @@ namespace STFU
     /// </summary>
     class PhysicsSystem
     {
+        private float fixedTimestep;
+        private int maxSteps; // Maximum number of steps in order to avoid degrading to a halt
         private float fixedTimestepAccumulator;
         private float fixedTimestepAccumulatorRatio;
         private int velocityIterations;
         private int positionIterations;
+        private float gravityY;
         public World world { get; private set; }
         public float Dt { get; set; }
 
-        private const float FIXED_TIMESTEP = 1f / 120f;
+        //private const float FIXED_TIMESTEP = 1f / 120f;
         // Maximum number of steps in order to avoid degrading to a halt
-        private const int MAX_STEPS = 4; // since 120/4 = 30. the game will run at a slower speed below 30fps.
+        //private const int MAX_STEPS = 4; // since 120/4 = 30. the game will run at a slower speed below 30fps.
+
+        private const string settingsIni = "Settings/PhysicsSettings.ini";
+        private const string engineSettings = "Engine";
 
         // Constructor
         public PhysicsSystem()
         {
+            ConfigFile configFile = GetPhysicsConfigFile();
+
+            // engine settings
+            fixedTimestep = configFile.SettingGroups[engineSettings].Settings["fixedTimestep"].GetValueAsFloat();
+            maxSteps = configFile.SettingGroups[engineSettings].Settings["maxSteps"].GetValueAsInt();
+            velocityIterations = configFile.SettingGroups[engineSettings].Settings["velocityIterations"].GetValueAsInt();
+            positionIterations = configFile.SettingGroups[engineSettings].Settings["positionIterations"].GetValueAsInt();
+            gravityY = configFile.SettingGroups[engineSettings].Settings["gravity"].GetValueAsFloat();
+
             fixedTimestepAccumulator = 0;
             fixedTimestepAccumulatorRatio = 0;
-            velocityIterations = 8;
-            positionIterations = 2;
             FarseerPhysics.Settings.VelocityIterations = velocityIterations;
             FarseerPhysics.Settings.PositionIterations = positionIterations;
-            this.Dt = FIXED_TIMESTEP;
+            this.Dt = fixedTimestep;
 
             // Define the gravity
-            Vector2 gravity = new Vector2(0, 22f);
+            Vector2 gravity = new Vector2(0, gravityY);
 
             // Create the world
             world = new World(gravity);
             world.AutoClearForces = false;
         }
 
+        public static ConfigFile GetPhysicsConfigFile()
+        {
+            return new ConfigFile(settingsIni);
+        }
+
         public void Update(float dt)
         {
             fixedTimestepAccumulator += dt;
-            int nSteps = (int)Math.Floor(fixedTimestepAccumulator / FIXED_TIMESTEP);
+            int nSteps = (int)Math.Floor(fixedTimestepAccumulator / fixedTimestep);
 
             if (nSteps > 0)
             {
-                fixedTimestepAccumulator -= nSteps * FIXED_TIMESTEP;
+                fixedTimestepAccumulator -= nSteps * fixedTimestep;
             }
 
-            fixedTimestepAccumulatorRatio = fixedTimestepAccumulator / FIXED_TIMESTEP;
+            fixedTimestepAccumulatorRatio = fixedTimestepAccumulator / fixedTimestep;
 
             // This is similar to clamp "dt":
-	        //	dt = std::min (dt, MAX_STEPS * FIXED_TIMESTEP)
+	        //	dt = std::min (dt, maxSteps * fixedTimestep)
 	        // but it allows above calculations of fixedTimestepAccumulator_ and
 	        // fixedTimestepAccumulatorRatio_ to remain unchanged.
-	        int nStepsClamped = Math.Min(nSteps, MAX_STEPS);
+	        int nStepsClamped = Math.Min(nSteps, maxSteps);
             for (int i = 0; i < nStepsClamped; i++)
 	        {
-		        singleStep(FIXED_TIMESTEP);
+		        singleStep(fixedTimestep);
 	        }
             
-            this.Dt = nStepsClamped * FIXED_TIMESTEP;
+            this.Dt = nStepsClamped * fixedTimestep;
 
             postStepping();
         }

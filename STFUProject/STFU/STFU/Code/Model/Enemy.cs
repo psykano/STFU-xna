@@ -8,6 +8,7 @@ using FarseerPhysics;
 using FarseerPhysics.Dynamics;
 using FarseerPhysics.Collision;
 using FarseerPhysics.Dynamics.Contacts;
+using EasyConfig;
 
 namespace STFU
 {
@@ -16,10 +17,17 @@ namespace STFU
     /// </summary>
     abstract class Enemy : LivingEntity
     {
+        private const string settingsIni = "Settings/EnemySettings.ini";
+
         // Constructor
         public Enemy(World world)
             : base(world)
         {
+        }
+
+        public static ConfigFile GetEnemyConfigFile()
+        {
+            return new ConfigFile(settingsIni);
         }
     }
 
@@ -27,6 +35,8 @@ namespace STFU
         where TPhysicsChar : PhysicsCharacter
     {
         protected EnemyEvent enemyEvent;
+        protected float screenWidth;
+        protected float screenHeight;
 
         public PhysicsContainer<TPhysicsChar> PhysicsContainer { get; protected set; }
 
@@ -38,9 +48,9 @@ namespace STFU
             this.PhysicsContainer = new PhysicsContainer<TPhysicsChar>();
         }
 
-        public virtual void SetUpEnemy(Vector2 enemyStartPosition, float width, float height, int health, float hitDelay, float recoveryDelay)
+        public virtual void SetUpEnemy(Vector2 enemyStartPosition, int health, float hitDelay, float recoveryDelay)
         {
-            setUpLivingEntity(enemyStartPosition, width, height, health, hitDelay, recoveryDelay, GameVariables.EnemyRespawnDelay);
+            setUpLivingEntity(enemyStartPosition, screenWidth, screenHeight, health, hitDelay, recoveryDelay, GameVariables.EnemyRespawnDelay);
         }
 
         public override void Spawn()

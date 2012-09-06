@@ -17,6 +17,7 @@ using FarseerPhysics.Dynamics.Joints;
 using FarseerPhysics.Dynamics.Contacts;
 using FarseerPhysics.Common;
 using FarseerPhysics.Collision.Shapes;
+using EasyConfig;
 
 namespace STFU
 {
@@ -34,11 +35,14 @@ namespace STFU
 
         private float centerOffset;
 
-        protected const float brakeSpeed = 0.25f;
-        protected const float defaultBodyFriction = 0f;
-        protected const float defaultBodyRestitution = 0f;
-        protected const float defaultWheelFriction = 4f;
-        protected const float defaultWheelRestitution = 0f;
+        // Resources
+        protected float brakeSpeed;
+        protected float defaultBodyFriction;
+        protected float defaultBodyRestitution;
+        protected float defaultWheelFriction;
+        protected float defaultWheelRestitution;
+
+        private const string physicsSettings = "CompositePhysicsCharacter";
 
         public CompositePhysicsCharacter(Entity owner, World world, Vector2 position, float width, float height, float density, OnCollision onCollision, OnSeparation onSeparation)
             : base(owner, world, position, width, height, density, onCollision, onSeparation)
@@ -51,6 +55,14 @@ namespace STFU
 
         protected override void SetUpPhysics(Entity owner, World world, Vector2 position, float width, float height, float density)
         {
+            // Load resources
+            ConfigFile configFile = PhysicsSystem.GetPhysicsConfigFile();
+            brakeSpeed = configFile.SettingGroups[physicsSettings].Settings["brakeSpeed"].GetValueAsFloat();
+            defaultBodyFriction = configFile.SettingGroups[physicsSettings].Settings["defaultBodyFriction"].GetValueAsFloat();
+            defaultBodyRestitution = configFile.SettingGroups[physicsSettings].Settings["defaultBodyRestitution"].GetValueAsFloat();
+            defaultWheelFriction = configFile.SettingGroups[physicsSettings].Settings["defaultWheelFriction"].GetValueAsFloat();
+            defaultWheelRestitution = configFile.SettingGroups[physicsSettings].Settings["defaultWheelRestitution"].GetValueAsFloat();
+
             //Create a fixture with a body almost the size of the entire object
             //but with the bottom part cut off.
             float upperBodyHeight = height - (width / 2);
@@ -150,7 +162,7 @@ namespace STFU
 
             if (CharOnHead)
             {
-                body.Friction = 0.5f;
+                body.Friction = 0.4f;
             }
             else
             {

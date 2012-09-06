@@ -23,9 +23,9 @@ namespace STFU
     /// </summary>
     class EnemyPhysicsCharacter : CompositePhysicsCharacter
     {
-        public float runSpeed = 30; // the default ***need to get rid of these defaults
-        public float flySpeed = 30; // the default
-        public float playerAngle;
+        public float RunSpeed { get; set; }
+        public float FlySpeed { get; set; }
+        public float PlayerAngle { get; set; }
 
         public EnemyPhysicsCharacter(Entity owner, World world, Vector2 position, float width, float height, float density, OnCollision onCollision, OnSeparation onSeparation)
             : base(owner, world, position, width, height, density, onCollision, onSeparation)
@@ -176,7 +176,7 @@ namespace STFU
             Vector2 rayEnd = rayStart + GameConstants.VectorFromAngle(angle, distance, facingRight);
             if (rayCastForPlayer(rayStart, rayEnd))
             {
-                playerAngle = angle;
+                this.PlayerAngle = angle;
                 return true;
             }
 
@@ -246,13 +246,13 @@ namespace STFU
         public void RunLeft(float speedPercent)
         {
             moveOnGround();
-            motor.MotorSpeed = -getSpeedFor(runSpeed, speedPercent);
+            motor.MotorSpeed = -getSpeedFor(this.RunSpeed, speedPercent);
         }
 
         public void RunRight(float speedPercent)
         {
             moveOnGround();
-            motor.MotorSpeed = getSpeedFor(runSpeed, speedPercent);
+            motor.MotorSpeed = getSpeedFor(this.RunSpeed, speedPercent);
         }
 
         public void StopRunning()
@@ -270,7 +270,7 @@ namespace STFU
         public void FlapLeft(float speedPercent)
         {
             moveInAir();
-            float speed = getSpeedFor(flySpeed, speedPercent);
+            float speed = getSpeedFor(this.FlySpeed, speedPercent);
             Vector2 flyVelocity = new Vector2(-speed*0.5f, -speed);
 
             body.LinearVelocity = flyVelocity;
@@ -279,7 +279,7 @@ namespace STFU
         public void FlapRight(float speedPercent)
         {
             moveInAir();
-            float speed = getSpeedFor(flySpeed, speedPercent);
+            float speed = getSpeedFor(this.FlySpeed, speedPercent);
             Vector2 flyVelocity = new Vector2(speed*0.5f, -speed);
 
             body.LinearVelocity = flyVelocity;
@@ -287,18 +287,18 @@ namespace STFU
 
         public void DiveLeft(float speedPercent, float angle)
         {
-            body.LinearVelocity = GameConstants.VectorFromAngle(angle, getSpeedFor(flySpeed, speedPercent), false);
+            body.LinearVelocity = GameConstants.VectorFromAngle(angle, getSpeedFor(this.FlySpeed, speedPercent), false);
         }
 
         public void DiveRight(float speedPercent, float angle)
         {
-            body.LinearVelocity = GameConstants.VectorFromAngle(angle, getSpeedFor(flySpeed, speedPercent), true);
+            body.LinearVelocity = GameConstants.VectorFromAngle(angle, getSpeedFor(this.FlySpeed, speedPercent), true);
         }
 
         public void Float(float speedPercent)
         {
             moveInAir();
-            float speed = getSpeedFor(flySpeed, speedPercent);
+            float speed = getSpeedFor(this.FlySpeed, speedPercent);
             body.LinearVelocity = new Vector2(0, -speed);
         }
 

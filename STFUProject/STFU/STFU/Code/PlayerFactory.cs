@@ -11,6 +11,7 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using FarseerPhysics;
 using FarseerPhysics.Dynamics;
+using EasyConfig;
 
 namespace STFU
 {
@@ -19,19 +20,25 @@ namespace STFU
     /// </summary>
     class PlayerFactory
     {
-        public const float PlayerWidth = 13f;
-        public const float PlayerHeight = 22f;
-        public const int PlayerHealth = 2;
+        private const string generalSettings = "General";
 
         public static Player CreatePlayer(World world, PlayerIndex playerIndex, PlayerEvent playerEvent, Vector2 playerPosition)
         {
-            Player player = new Player(world, (PlayerIndex)playerIndex, playerEvent);
-            player.SetUpPlayer(playerPosition, PlayerWidth, PlayerHeight, PlayerHealth);
+            ConfigFile configFile = new ConfigFile(Player.SettingsIni);
+            int health = configFile.SettingGroups[generalSettings].Settings["health"].GetValueAsInt();
+            bool enableWallJumping = configFile.SettingGroups[generalSettings].Settings["enableWallJumping"].GetValueAsBool();
+            bool enableWallSliding = configFile.SettingGroups[generalSettings].Settings["enableWallSliding"].GetValueAsBool();
+            bool enableShooting = configFile.SettingGroups[generalSettings].Settings["enableShooting"].GetValueAsBool();
 
-            // these should be resources
-            player.enableWallJumping();
-            player.enableWallSliding();
-            player.enableShooting();
+            Player player = new Player(world, (PlayerIndex)playerIndex, playerEvent);
+            player.SetUpPlayer(playerPosition, health);
+
+            if (enableWallJumping)
+                player.enableWallJumping();
+            if (enableWallSliding)
+                player.enableWallSliding();
+            if (enableShooting)
+                player.enableShooting();
 
             return player;
         }

@@ -1,7 +1,7 @@
 Super Team Fighters Unite!
 
-There is TODO describing what I'm currently working on.
-In the meantime, there's a prototype of the game with multiplayer functionality but no way to win and no way to change levels.
+There is a TODO describing what I'm currently working on.
+In the meantime, there's a prototype of the game with multiplayer functionality but no way to win and no way to change levels. The latest binaries are in the RAR file.
 
 XNA Game Studio is required to compile the source.
 XNA 4.0 Redistributable and the .NET framework are required to run the game.

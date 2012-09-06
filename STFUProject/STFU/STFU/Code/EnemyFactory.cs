@@ -11,6 +11,7 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using FarseerPhysics;
 using FarseerPhysics.Dynamics;
+using EasyConfig;
 
 namespace STFU
 {
@@ -20,16 +21,17 @@ namespace STFU
     class EnemyFactory
     {
         // walker
-        public const float WalkerWidth = 30f;
-        public const float WalkerHeight = 32f;
-        public const int WalkerHealth = 3;
-        public const float WalkerHitDelay = 0.2f;
-        public const float WalkerRecoveryDelay = 0f;
+        private const string walkerGeneralSettings = "WalkerGeneral";
 
         public static WalkerEnemy CreateWalkerEntity(World world, EnemyEvent enemyEvent, Vector2 enemyPosition)
         {
+            ConfigFile configFile = Enemy.GetEnemyConfigFile();
+            int health = configFile.SettingGroups[walkerGeneralSettings].Settings["health"].GetValueAsInt();
+            float hitDelay = configFile.SettingGroups[walkerGeneralSettings].Settings["hitDelay"].GetValueAsFloat();
+            float recoveryDelay = configFile.SettingGroups[walkerGeneralSettings].Settings["recoveryDelay"].GetValueAsFloat();
+
             WalkerEnemy enemy = new WalkerEnemy(world, enemyEvent);
-            enemy.SetUpEnemy(enemyPosition, WalkerWidth, WalkerHeight, WalkerHealth, WalkerHitDelay, WalkerRecoveryDelay);
+            enemy.SetUpEnemy(enemyPosition, health, hitDelay, recoveryDelay);
 
             return enemy;
         }
@@ -50,16 +52,17 @@ namespace STFU
         }
 
         // bat
-        public const float BatWidth = 22f;
-        public const float BatHeight = 26f;
-        public const int BatHealth = 2;
-        public const float BatHitDelay = 0.2f;
-        public const float BatRecoveryDelay = 0f;
+        private const string batGeneralSettings = "BatGeneral";
 
         public static BatEnemy CreateBatEntity(World world, EnemyEvent enemyEvent, Vector2 enemyPosition)
         {
+            ConfigFile configFile = Enemy.GetEnemyConfigFile();
+            int health = configFile.SettingGroups[batGeneralSettings].Settings["health"].GetValueAsInt();
+            float hitDelay = configFile.SettingGroups[batGeneralSettings].Settings["hitDelay"].GetValueAsFloat();
+            float recoveryDelay = configFile.SettingGroups[batGeneralSettings].Settings["recoveryDelay"].GetValueAsFloat();
+
             BatEnemy enemy = new BatEnemy(world, enemyEvent);
-            enemy.SetUpEnemy(enemyPosition, BatWidth, BatHeight, BatHealth, BatHitDelay, BatRecoveryDelay);
+            enemy.SetUpEnemy(enemyPosition, health, hitDelay, recoveryDelay);
 
             return enemy;
         }

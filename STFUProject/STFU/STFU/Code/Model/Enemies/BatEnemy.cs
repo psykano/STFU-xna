@@ -9,6 +9,7 @@ using FarseerPhysics.Dynamics;
 using FarseerPhysics.Collision;
 using FarseerPhysics.Dynamics.Contacts;
 using FarseerPhysics.Common;
+using EasyConfig;
 
 namespace STFU
 {
@@ -30,24 +31,41 @@ namespace STFU
         public EnemyBehavior<BatBehavior> Behavior { get; private set; }
         public EnemyVision Vision { get; private set; }
         public EnemyMovement Movement { get; private set; }
-        private const float flyPercent = 0.6f;
-        private const float sightForPlayerDistance = 2f;
-        private const float sightForWallDistance = 0.25f;
-        private const float sightForPlayerAngle = 50f;
-        private const float sightForPlayerAngleOffset = 40f;
-        private const float enemySightDelay = 0.25f;
-        private const float turnAroundTimerDelay = 0f;
-        private const float divePixelOffset = 2f;
+
+        // Resources
+        private float flyPercent;
+        private float sightForPlayerDistance;
+        private float sightForWallDistance;
+        private float sightForPlayerAngle;
+        private float sightForPlayerAngleOffset;
+        private float enemySightDelay;
+        private float turnAroundTimerDelay;
+        private float divePixelOffset;
 
         private Timer flapTimer; // put this in movement somehow ***
         private float flapTimerDelay;
         private Timer diveTimer; // and this maybe? ***
         private float diveTimerDelay;
 
+        private const string initSettings = "BatInit";
+
         // Constructor
         public BatEnemy(World world, EnemyEvent enemyEvent)
             : base(world, enemyEvent)
         {
+            // Load resources
+            ConfigFile configFile = GetEnemyConfigFile();
+            screenWidth = configFile.SettingGroups[initSettings].Settings["screenWidth"].GetValueAsFloat();
+            screenHeight = configFile.SettingGroups[initSettings].Settings["screenHeight"].GetValueAsFloat();
+            flyPercent = configFile.SettingGroups[initSettings].Settings["flyPercent"].GetValueAsFloat();
+            sightForPlayerDistance = configFile.SettingGroups[initSettings].Settings["sightForPlayerDistance"].GetValueAsFloat();
+            sightForWallDistance = configFile.SettingGroups[initSettings].Settings["sightForWallDistance"].GetValueAsFloat();
+            sightForPlayerAngle = configFile.SettingGroups[initSettings].Settings["sightForPlayerAngle"].GetValueAsFloat();
+            sightForPlayerAngleOffset = configFile.SettingGroups[initSettings].Settings["sightForPlayerAngleOffset"].GetValueAsFloat();
+            enemySightDelay = configFile.SettingGroups[initSettings].Settings["enemySightDelay"].GetValueAsFloat();
+            turnAroundTimerDelay = configFile.SettingGroups[initSettings].Settings["turnAroundTimerDelay"].GetValueAsFloat();
+            divePixelOffset = configFile.SettingGroups[initSettings].Settings["divePixelOffset"].GetValueAsFloat();
+
             this.FacingRight = false;
             this.Behavior = new EnemyBehavior<BatBehavior>(enemyEvent);
             Vision = new EnemyVision(sightForPlayerDistance, enemySightDelay);
@@ -59,9 +77,9 @@ namespace STFU
             diveTimerDelay = 0.5f;
         }
 
-        public override void SetUpEnemy(Vector2 enemyStartPosition, float width, float height, int health, float hitDelay, float recoveryDelay)
+        public override void SetUpEnemy(Vector2 enemyStartPosition, int health, float hitDelay, float recoveryDelay)
         {
-            base.SetUpEnemy(enemyStartPosition, width, height, health, hitDelay, recoveryDelay);
+            base.SetUpEnemy(enemyStartPosition, health, hitDelay, recoveryDelay);
         }
 
         public override void Spawn()
@@ -73,7 +91,7 @@ namespace STFU
             this.PhysicsContainer.Object = new EnemyPhysicsCharacter(this, world, this.SpawnPosition, this.ScreenWidth, this.ScreenHeight, 1f,
                 new OnCollision(onCollision), new OnSeparation(onSeparation));
             this.PhysicsContainer.Object.CollisionCategory = GameConstants.EnemyCollisionCategory;
-            this.PhysicsContainer.Object.flySpeed = 15;
+            this.PhysicsContainer.Object.FlySpeed = 15;
 
             Vision.Reset();
             Movement.Reset();
@@ -260,13 +278,13 @@ namespace STFU
         public void DiveLeft()
         {
             this.FacingRight = false;
-            this.PhysicsContainer.Object.DiveLeft(1f, this.PhysicsContainer.Object.playerAngle);
+            this.PhysicsContainer.Object.DiveLeft(1f, this.PhysicsContainer.Object.PlayerAngle);
         }
 
         public void DiveRight()
         {
             this.FacingRight = true;
-            this.PhysicsContainer.Object.DiveRight(1f, this.PhysicsContainer.Object.playerAngle);
+            this.PhysicsContainer.Object.DiveRight(1f, this.PhysicsContainer.Object.PlayerAngle);
         }
 
         public void StopMoving()

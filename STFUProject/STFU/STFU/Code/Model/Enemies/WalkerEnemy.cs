@@ -9,6 +9,7 @@ using FarseerPhysics.Dynamics;
 using FarseerPhysics.Collision;
 using FarseerPhysics.Dynamics.Contacts;
 using FarseerPhysics.Common;
+using EasyConfig;
 
 namespace STFU
 {
@@ -30,25 +31,39 @@ namespace STFU
         public EnemyBehavior<WalkerBehavior> Behavior { get; private set; }
         public EnemyVision Vision { get; private set; }
         public EnemyMovement Movement { get; private set; }
-        private const float walkPercent = 0.4f;
-        private const float sightForPlayerDistance = 3f;
-        private const float sightForGroundDistance = 0.3f;
-        private const float enemySightDelay = 0.25f;
-        private const float turnAroundTimerDelay = 0.25f;
+
+        // Resources
+        private float walkPercent;
+        private float sightForPlayerDistance;
+        private float sightForGroundDistance;
+        private float enemySightDelay;
+        private float turnAroundTimerDelay;
+
+        private const string initSettings = "WalkerInit";
 
         // Constructor
         public WalkerEnemy(World world, EnemyEvent enemyEvent) 
             : base(world, enemyEvent)
         {
+            // Load resources
+            ConfigFile configFile = GetEnemyConfigFile();
+            screenWidth = configFile.SettingGroups[initSettings].Settings["screenWidth"].GetValueAsFloat();
+            screenHeight = configFile.SettingGroups[initSettings].Settings["screenHeight"].GetValueAsFloat();
+            walkPercent = configFile.SettingGroups[initSettings].Settings["walkPercent"].GetValueAsFloat();
+            sightForPlayerDistance = configFile.SettingGroups[initSettings].Settings["sightForPlayerDistance"].GetValueAsFloat();
+            sightForGroundDistance = configFile.SettingGroups[initSettings].Settings["sightForGroundDistance"].GetValueAsFloat();
+            enemySightDelay = configFile.SettingGroups[initSettings].Settings["enemySightDelay"].GetValueAsFloat();
+            turnAroundTimerDelay = configFile.SettingGroups[initSettings].Settings["turnAroundTimerDelay"].GetValueAsFloat();
+
             this.FacingRight = false;
             this.Behavior = new EnemyBehavior<WalkerBehavior>(enemyEvent);
             Vision = new EnemyVision(sightForPlayerDistance, enemySightDelay);
             Movement = new EnemyMovement(turnAroundTimerDelay);
         }
 
-        public override void SetUpEnemy(Vector2 enemyStartPosition, float width, float height, int health, float hitDelay, float recoveryDelay)
+        public override void SetUpEnemy(Vector2 enemyStartPosition, int health, float hitDelay, float recoveryDelay)
         {
-            base.SetUpEnemy(enemyStartPosition, width, height, health, hitDelay, recoveryDelay);
+            base.SetUpEnemy(enemyStartPosition, health, hitDelay, recoveryDelay);
         }
 
         public override void Spawn()
@@ -60,7 +75,7 @@ namespace STFU
             this.PhysicsContainer.Object = new EnemyPhysicsCharacter(this, world, this.SpawnPosition, this.ScreenWidth, this.ScreenHeight, 1f,
                 new OnCollision(onCollision), new OnSeparation(onSeparation));
             this.PhysicsContainer.Object.CollisionCategory = GameConstants.EnemyCollisionCategory;
-            this.PhysicsContainer.Object.runSpeed = 15;
+            this.PhysicsContainer.Object.RunSpeed = 15;
 
             Vision.Reset();
             Movement.Reset();

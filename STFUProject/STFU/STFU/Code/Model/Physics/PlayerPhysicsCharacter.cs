@@ -15,6 +15,7 @@ using FarseerPhysics.Collision;
 using FarseerPhysics.Dynamics.Joints;
 using FarseerPhysics.Dynamics.Contacts;
 using FarseerPhysics.Common;
+using EasyConfig;
 
 namespace STFU
 {
@@ -27,15 +28,15 @@ namespace STFU
 
         private Vector2 jumpForce;
         private Vector2 airControlForce;
-        private float runSpeed = 35f;
-        private float airControlSpeed = 3.6f;
-        private const float jumpImpulse = -6.4f;
-        private const float wallJumpImpulse = 0.13f; // < old is 0.16
-        private const float airControlAbility = 30f; // < old is 40
-        private const float terminalVelocity = 10f;
-        private const float slideTerminalVelocity = 1.1f;
-        private const float defaultFriction = 0f;
-        private const float defaultRestitution = 0f;
+
+        // Resources
+        private float runSpeed;
+        private float airControlSpeed;
+        private float jumpImpulse;
+        private float wallJumpImpulse;
+        private float airControlAbility;
+        private float terminalVelocity;
+        private float slideTerminalVelocity;
 
         private Timer onGroundTimer;
         private Timer onLeftWallTimer;
@@ -51,9 +52,21 @@ namespace STFU
         private bool nextOnRightWall;
         private const float onGroundOrWallDelay = 0.05f;
 
+        private const string physicsSettings = "PlayerPhysicsCharacter";
+
         public PlayerPhysicsCharacter(Entity owner, World world, Vector2 position, float width, float height, float density, OnCollision onCollision, OnSeparation onSeparation)
             : base(owner, world, position, width, height, density, onCollision, onSeparation)
         {
+            // Load resources
+            ConfigFile configFile = PhysicsSystem.GetPhysicsConfigFile();
+            runSpeed = configFile.SettingGroups[physicsSettings].Settings["runSpeed"].GetValueAsFloat();
+            airControlSpeed = configFile.SettingGroups[physicsSettings].Settings["airControlSpeed"].GetValueAsFloat();
+            jumpImpulse = configFile.SettingGroups[physicsSettings].Settings["jumpImpulse"].GetValueAsFloat();
+            wallJumpImpulse = configFile.SettingGroups[physicsSettings].Settings["wallJumpImpulse"].GetValueAsFloat();
+            airControlAbility = configFile.SettingGroups[physicsSettings].Settings["airControlAbility"].GetValueAsFloat();
+            terminalVelocity = configFile.SettingGroups[physicsSettings].Settings["terminalVelocity"].GetValueAsFloat();
+            slideTerminalVelocity = configFile.SettingGroups[physicsSettings].Settings["slideTerminalVelocity"].GetValueAsFloat();
+
             wallSlideEnabled = false;
             onGroundTimer = new Timer();
             onLeftWallTimer = new Timer();

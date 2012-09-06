@@ -58,41 +58,47 @@ namespace STFU
 
         int numPlayers;
 
-        private const float FIXED_TIMESTEP = 1f / 30f;
-        private const int MAX_STEPS = 1;
-        private const int DEFAULT_RESOLUTION_HEIGHT = 720;
-        private const string gameSettingsIni = "GameSettings.ini";
+        private float gameSpeed;
+        private int defaultResolutionHeight;
+        private bool enableDebugging;
+        public bool ShowDebugView { get; set; }
 
-        private const bool DEBUG = true;
-        public bool EnableDebugView = false;
+        private const string gameSettingsIni = "Settings/GameSettings.ini";
+        private const string videoSettings = "Video";
+        private const string generalSettings = "General";
+        private const string engineSettings = "Engine";
+
+        private const float fixedTimestep = 1/30f;
+        private const int maxSteps = 1;
 
         public Game1()
         {
-            // testing ini file *** here
             ConfigFile configFile = new ConfigFile(gameSettingsIni);
 
-            foreach (KeyValuePair<string, SettingsGroup> group in configFile.SettingGroups)
-            {
-                Console.WriteLine("****************************");
-                Console.WriteLine(group.Key + ":");
-                Console.WriteLine();
+            // engine settings
+            gameSpeed = configFile.SettingGroups[engineSettings].Settings["gameSpeed"].GetValueAsFloat();
+            defaultResolutionHeight = configFile.SettingGroups[engineSettings].Settings["defaultResolutionHeight"].GetValueAsInt();
+            enableDebugging = configFile.SettingGroups[engineSettings].Settings["enableDebugging"].GetValueAsBool();
+            this.ShowDebugView = false;
 
-                foreach (KeyValuePair<string, Setting> value in group.Value.Settings)
-                    Console.WriteLine("{0} = {1} (Is Array? {2})", value.Key, value.Value.RawValue, value.Value.IsArray);
-
-                Console.WriteLine();
-            }
-
+            // video settings
             graphics = new GraphicsDeviceManager(this);
-            graphics.PreferredBackBufferWidth = 1280; // 1280
-            graphics.PreferredBackBufferHeight = 720; // 720
-            graphics.IsFullScreen = false; // windowed by default
-            
-            // it's odd... we need to enable these together otherwise there's input lag (and probably other nasty things)
-            IsFixedTimeStep = false;
-            graphics.SynchronizeWithVerticalRetrace = false;
+            graphics.IsFullScreen = configFile.SettingGroups[videoSettings].Settings["Fullscreen"].GetValueAsBool();
+            if (graphics.IsFullScreen)
+            {
+                graphics.PreferredBackBufferWidth = configFile.SettingGroups[videoSettings].Settings["Width"].GetValueAsInt();
+                graphics.PreferredBackBufferHeight = configFile.SettingGroups[videoSettings].Settings["Height"].GetValueAsInt();
+            }
+            else
+            {
+                // default resolution and windowed resolution
+                graphics.PreferredBackBufferWidth = 1280;
+                graphics.PreferredBackBufferHeight = 720;
+            }
+            SetVsync(configFile.SettingGroups[videoSettings].Settings["Vsync"].GetValueAsBool());
+            graphics.ApplyChanges();
 
-            if (DEBUG)
+            if (enableDebugging)
             {
                 Components.Add(new DebugComponent(this, Content, graphics));
             }
@@ -102,10 +108,25 @@ namespace STFU
             ConvertUnits.SetDisplayUnitToSimUnitRatio(64f);
 
             // players get updated twice as much as all other entities
-            playersFixedTimeStep = new FixedTimeStepSystem(FIXED_TIMESTEP, MAX_STEPS, new SingleStep(PlayersSingleStep), new PostStepping(PlayersPostStepping));
-            fixedTimeStep = new FixedTimeStepSystem(FIXED_TIMESTEP * 2f, MAX_STEPS, new SingleStep(SingleStep), new PostStepping(PostStepping));
+            playersFixedTimeStep = new FixedTimeStepSystem(fixedTimestep, maxSteps, new SingleStep(PlayersSingleStep), new PostStepping(PlayersPostStepping));
+            fixedTimeStep = new FixedTimeStepSystem(fixedTimestep * 2f, maxSteps, new SingleStep(SingleStep), new PostStepping(PostStepping));
 
             numPlayers = 1;
+        }
+
+        public void SetVsync(bool enable)
+        {
+            // it's odd... we need to enable these together otherwise there's input lag (and probably other nasty things)
+            if (enable)
+            {
+                IsFixedTimeStep = true;
+                graphics.SynchronizeWithVerticalRetrace = true;
+            }
+            else
+            {
+                IsFixedTimeStep = false;
+                graphics.SynchronizeWithVerticalRetrace = false;
+            }
         }
 
         /// <summary>
@@ -361,11 +382,9 @@ namespace STFU
                 this.Exit();
             }
 
-            // TODO: Add your update logic here
+            // Update logic
             float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
-            //dt /= 2f; // slomo
-            //dt /= 4f; // slooomooo
-            //dt /= 8f; // even slower slooomooo
+            dt *= gameSpeed;
             
             physicsSystem.Update(dt);
             // after this, we use the dt from the physics engine since there might be slowdown
@@ -405,7 +424,7 @@ namespace STFU
         protected override void Draw(GameTime gameTime)
         {
             // physics debugging view
-            if (EnableDebugView)
+            if (this.ShowDebugView)
             {
                 GraphicsDevice.Viewport = defaultViewport;
                 GraphicsDevice.Clear(new Color(50, 50, 50));
@@ -469,7 +488,7 @@ namespace STFU
             spriteBatch.End();
              */
 
-            if (!EnableDebugView)
+            if (!this.ShowDebugView)
             {
                 GraphicsDevice.Viewport = defaultViewport;
                 //Color color = new Color(210, 210, 210); // old
@@ -569,7 +588,7 @@ namespace STFU
 
         protected float resolutionRatio()
         {
-            return (float)defaultViewport.Height / DEFAULT_RESOLUTION_HEIGHT;
+            return (float)defaultViewport.Height / defaultResolutionHeight;
         }
 
         // Drop-in
@@ -793,16 +812,14 @@ namespace STFU
         }
         protected void toggleVSync()
         {
-            if (game.IsFixedTimeStep)
+            if (graphics.SynchronizeWithVerticalRetrace)
             {
-                game.IsFixedTimeStep = false;
-                graphics.SynchronizeWithVerticalRetrace = false;
+                game.SetVsync(false);
                 debugString = "VSync off";
             }
             else
             {
-                game.IsFixedTimeStep = true;
-                graphics.SynchronizeWithVerticalRetrace = true;
+                game.SetVsync(true);
                 debugString = "VSync on";
             }
 
@@ -836,10 +853,10 @@ namespace STFU
         }
         protected void toggleDebugView()
         {
-            if (game.EnableDebugView)
-                game.EnableDebugView = false;
+            if (game.ShowDebugView)
+                game.ShowDebugView = false;
             else
-                game.EnableDebugView = true;
+                game.ShowDebugView = true;
         }
         protected void toggleChangeNumPlayers(bool add)
         {

@@ -55,6 +55,16 @@ namespace EasyConfig
         /// <returns>A float representation of the value</returns>
         public float GetValueAsFloat()
         {
+            // check whether it's a fraction
+            if (RawValue.Contains("/"))
+            {
+                string[] parts = RawValue.Split('/');
+
+                float numerator = float.Parse(parts[0], CultureInfo.InvariantCulture.NumberFormat);
+                float denominator = float.Parse(parts[1], CultureInfo.InvariantCulture.NumberFormat);
+                return numerator / denominator;
+            }
+
             return float.Parse(RawValue, CultureInfo.InvariantCulture.NumberFormat);
         }
 

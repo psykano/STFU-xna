@@ -7,4 +7,7 @@ Content\animationsheetmap.xnb
 Content\tilesheetmap.xnb
 Content\HUDFont.xnb
 Content\font.xnb
-GameSettings.ini
+Settings\EnemySettings.ini
+Settings\PhysicsSettings.ini
+Settings\GameSettings.ini
+Settings\PlayerSettings.ini

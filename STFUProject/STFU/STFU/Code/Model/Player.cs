@@ -13,6 +13,7 @@ using FarseerPhysics.Dynamics;
 using FarseerPhysics.Collision;
 using FarseerPhysics.Dynamics.Contacts;
 using FarseerPhysics.Common;
+using EasyConfig;
 
 namespace STFU
 {
@@ -44,31 +45,47 @@ namespace STFU
         public State State { get; private set; }
 
         private bool landed;
+        private int onDeath;
 
         // abilities (resources)
         private bool wallJumpEnabled;
         private bool wallSlideEnabled;
         private bool shootEnabled;
-
         private bool canJump;
         private bool canWallJump;
         private float jumpTimer;
         private float jumpStateBufferTimer;
-        private const float jumpDelay = 0.11f; // old was 0.19f
-        private const float jumpStateBufferDelay = 0.1f;
-        private const float changeDirectionVelocity = 1f;
-        private const float hitDelay = 0f;
-        private const float recoveryDelay = 1.1f;
-        private const float respawnDelay = 4f;
-        private const float swordDistance = 35f;
-        private const float swordDistanceWhenRunning = 55f;
 
-        private int onDeath;
+        // Resources
+        private float screenWidth;
+        private float screenHeight;
+        private float jumpDelay;
+        private float jumpStateBufferDelay;
+        private float hitDelay;
+        private float recoveryDelay;
+        private float respawnDelay;
+        private float swordDistance;
+        private float swordDistanceWhenRunning;
+
+        public const string SettingsIni = "Settings/PlayerSettings.ini";
+        private const string initSettings = "Init";
 
         // Constructor
         public Player(World world, PlayerIndex playerIndex, PlayerEvent playerEvent)
             : base(world)
         {
+            // Load resources
+            ConfigFile configFile = new ConfigFile(SettingsIni);
+            screenWidth = configFile.SettingGroups[initSettings].Settings["screenWidth"].GetValueAsFloat();
+            screenHeight = configFile.SettingGroups[initSettings].Settings["screenHeight"].GetValueAsFloat();
+            jumpDelay = configFile.SettingGroups[initSettings].Settings["jumpDelay"].GetValueAsFloat();
+            jumpStateBufferDelay = configFile.SettingGroups[initSettings].Settings["jumpStateBufferDelay"].GetValueAsFloat();
+            hitDelay = configFile.SettingGroups[initSettings].Settings["hitDelay"].GetValueAsFloat();
+            recoveryDelay = configFile.SettingGroups[initSettings].Settings["recoveryDelay"].GetValueAsFloat();
+            respawnDelay = configFile.SettingGroups[initSettings].Settings["respawnDelay"].GetValueAsFloat();
+            swordDistance = configFile.SettingGroups[initSettings].Settings["swordDistance"].GetValueAsFloat();
+            swordDistanceWhenRunning = configFile.SettingGroups[initSettings].Settings["swordDistanceWhenRunning"].GetValueAsFloat();
+
             this.PlayerIndex = playerIndex;
             this.playerEvent = playerEvent;
             this.PhysicsContainer = new PhysicsContainer<PlayerPhysicsCharacter>();
@@ -88,9 +105,9 @@ namespace STFU
             this.Sword.RotateWhenShooting(40f, 0, 180);
         }
 
-        public void SetUpPlayer(Vector2 playerStartPosition, float width, float height, int health)
+        public void SetUpPlayer(Vector2 playerStartPosition, int health)
         {
-            setUpLivingEntity(playerStartPosition, width, height, health, hitDelay, recoveryDelay, respawnDelay);
+            setUpLivingEntity(playerStartPosition, screenWidth, screenHeight, health, hitDelay, recoveryDelay, respawnDelay);
         }
 
         public override void Spawn()

@@ -1,6 +1,8 @@
 Currently:
 - INI files
-	- on "here ***" in game.cs
+	- do EngineSettings.ini
+		- refactor appropriate physics classes... and maybe some other engine classes?
+	- after having done this, put a binary on github and merge develop into master
 
 - make mines (the exploding kind, not the exploring kind)
 
