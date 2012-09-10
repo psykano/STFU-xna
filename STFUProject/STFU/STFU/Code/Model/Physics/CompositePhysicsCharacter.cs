@@ -43,6 +43,7 @@ namespace STFU
         protected float defaultWheelRestitution;
 
         private const string physicsSettings = "CompositePhysicsCharacter";
+        public const float defaultMaxMotorTorque = 0.3f; //set this higher for some more juice
 
         public CompositePhysicsCharacter(Entity owner, World world, Vector2 position, float width, float height, float density, OnCollision onCollision, OnSeparation onSeparation)
             : base(owner, world, position, width, height, density, onCollision, onSeparation)
@@ -102,7 +103,7 @@ namespace STFU
             //So lets connect them together
             motor = JointFactory.CreateRevoluteJoint(world, body, wheelBody, Vector2.Zero);
             motor.MotorEnabled = true;
-            motor.MaxMotorTorque = 0.3f; //set this higher for some more juice
+            motor.MaxMotorTorque = defaultMaxMotorTorque;
             motor.MotorSpeed = 0;
 
             //Make sure the two fixtures don't collide with each other
@@ -180,7 +181,7 @@ namespace STFU
         protected void adjustForEdgeCatching()
         {
             // To stop edge catching if it occurs
-            if (!OnGround && onWall() && checkEdgeCatching())
+            if (!OnGround && OnWall() && checkEdgeCatching())
             {
                 // old method
                 //body.LinearVelocity = new Vector2(body.LinearVelocity.X, 1);

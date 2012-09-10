@@ -65,10 +65,17 @@ namespace STFU
         private float recoveryDelay;
         private float respawnDelay;
         private float swordDistance;
-        private float swordDistanceWhenRunning;
+        private float addedSwordDistanceWhenRunning;
+        private float addedSwordDistanceWhenDashing;
 
         public const string SettingsIni = "Settings/PlayerSettings.ini";
         private const string initSettings = "Init";
+
+        public bool Dashing { get; private set; }
+        private bool canDash;
+        private float dashTimer;
+        private float dashDelay;
+        private Direction lastDashDirection;
 
         // Constructor
         public Player(World world, PlayerIndex playerIndex, PlayerEvent playerEvent)
@@ -84,7 +91,9 @@ namespace STFU
             recoveryDelay = configFile.SettingGroups[initSettings].Settings["recoveryDelay"].GetValueAsFloat();
             respawnDelay = configFile.SettingGroups[initSettings].Settings["respawnDelay"].GetValueAsFloat();
             swordDistance = configFile.SettingGroups[initSettings].Settings["swordDistance"].GetValueAsFloat();
-            swordDistanceWhenRunning = configFile.SettingGroups[initSettings].Settings["swordDistanceWhenRunning"].GetValueAsFloat();
+            addedSwordDistanceWhenRunning = configFile.SettingGroups[initSettings].Settings["addedSwordDistanceWhenRunning"].GetValueAsFloat();
+            addedSwordDistanceWhenDashing = configFile.SettingGroups[initSettings].Settings["addedSwordDistanceWhenDashing"].GetValueAsFloat();
+            dashDelay = configFile.SettingGroups[initSettings].Settings["dashDelay"].GetValueAsFloat();
 
             this.PlayerIndex = playerIndex;
             this.playerEvent = playerEvent;
@@ -146,6 +155,10 @@ namespace STFU
             jumpTimer = 0f;
             jumpStateBufferTimer = 0f;
             onDeath = 0;
+
+            this.Dashing = false;
+            canDash = false;
+            dashTimer = 0f;
         }
 
         protected override void updateWhenAlive(float dt)
@@ -181,6 +194,15 @@ namespace STFU
                 jumpStateBufferTimer += dt;
             }
 
+            if (dashTimer < 0)
+            {
+                dashTimer += dt;
+            }
+            else
+            {
+                StopDashing();
+            }
+
             // Update the physics character
             this.PhysicsContainer.Object.Update(dt);
 
@@ -201,13 +223,14 @@ namespace STFU
                     Idle();
                 }
 
-                canJump = true;
-                canWallJump = false;
-
                 if (!landed)
                 {
                     onLanding();
                 }
+
+                canJump = true;
+                canWallJump = false;
+                canDash = true;
             }
             else 
             {
@@ -215,7 +238,7 @@ namespace STFU
 
                 if (wallJumpEnabled)
                 {
-                    if (this.PhysicsContainer.Object.onWall())
+                    if (this.PhysicsContainer.Object.OnWall())
                     {
                         canWallJump = true;
                     }
@@ -224,6 +247,15 @@ namespace STFU
                         canWallJump = false;
                     }
                 }
+
+                // if we hit a wall while dashing in the air, we stop dashing
+                if (this.Dashing)
+                {
+                    if (this.PhysicsContainer.Object.OnWall())
+                        StopDashing();
+                }
+                // can't start a dash unless we're on the ground
+                canDash = false;
 
                 // check which way we should be facing while in the air
                 // actually, this implements an interesting gameplay element when disabled
@@ -369,7 +401,6 @@ namespace STFU
         public void onLanding()
         {
             landed = true;
-
             this.Gun.ChangeRotationFromDownToForward();
         }
 
@@ -427,7 +458,7 @@ namespace STFU
         {
             if (changeState(State.Running))
             {
-                Console.Out.WriteLine("running");
+                //Console.Out.WriteLine("running");
             }
         }
 
@@ -444,9 +475,12 @@ namespace STFU
         {
             if (this.PhysicsContainer.Object.OnGround && this.State != State.Jumping)
             {
-                this.FacingRight = false;
-                Running();
-                this.PhysicsContainer.Object.RunLeft(speedPercent);
+                if (!this.Dashing)
+                {
+                    this.FacingRight = false;
+                    Running();
+                    this.PhysicsContainer.Object.RunLeft(speedPercent);
+                }
             }
             else
             {
@@ -458,9 +492,12 @@ namespace STFU
         {
             if (this.PhysicsContainer.Object.OnGround && this.State != State.Jumping)
             {
-                this.FacingRight = true;
-                Running();
-                this.PhysicsContainer.Object.RunRight(speedPercent);
+                if (!this.Dashing)
+                {
+                    this.FacingRight = true;
+                    Running();
+                    this.PhysicsContainer.Object.RunRight(speedPercent);
+                }
             }
             else
             {
@@ -472,7 +509,10 @@ namespace STFU
         {
             if (this.PhysicsContainer.Object.OnGround && this.State != State.Jumping)
             {
-                this.PhysicsContainer.Object.StopRunning();
+                if (!this.Dashing)
+                {
+                    this.PhysicsContainer.Object.StopRunning();
+                }
             }
             else
             {
@@ -528,11 +568,8 @@ namespace STFU
 
         public void StopJumping()
         {
-            // old ***
-            //if (this.State == State.Jumping)
-            //{
-
-            if (!this.PhysicsContainer.Object.OnGround) // so that the player can't jump again [in the air] after shooting through a platform
+            // so that the player can't jump again [in the air] after shooting through a platform
+            if (!this.PhysicsContainer.Object.OnGround)
             {
                 canJump = false;
                 if (this.State == State.Jumping)
@@ -548,26 +585,76 @@ namespace STFU
             this.PhysicsContainer.Object.Fall();
         }
 
-        public void ShootSword(Direction direction)
+        public void StartDashing(Direction direction)
         {
-            // dash ***
-            /*
-            if (xxx == false)
+            if (!this.Dashing && canDash)
             {
-                xxx = true;
-                if (this.PhysicsContainer.Object.OnGround)
+                this.Dashing = true;
+                this.PhysicsContainer.Object.Dash();
+                lastDashDirection = direction;
+                Dash(lastDashDirection);
+                dashTimer = -dashDelay;
+            }
+        }
+
+        public void KeepDashing(Direction direction)
+        {
+            if (this.Dashing)
+            {
+                if (direction != Direction.None)
+                    lastDashDirection = direction;
+                Dash(lastDashDirection);
+            }
+        }
+
+        public void Dash(Direction direction)
+        {
+            if (this.PhysicsContainer.Object.OnGround)
+            {
+                Idle();
+
+                if (direction == Direction.Right)
                 {
-                    float impulse = 0.33f;
-                    if (!FacingRight)
-                        impulse = -impulse;
-                    Console.WriteLine("prev_vel: {0}", this.PhysicsContainer.Object.body.LinearVelocity.X);
-                    this.PhysicsContainer.Object.body.LinearVelocity = new Vector2(0, this.PhysicsContainer.Object.body.LinearVelocity.Y);
-                    this.PhysicsContainer.Object.body.ApplyLinearImpulse(new Vector2(impulse, 0));
-                    Console.WriteLine("current_vel: {0}", this.PhysicsContainer.Object.body.LinearVelocity.X);
+                    this.PhysicsContainer.Object.DashRight();
+                }
+                else if (direction == Direction.Left)
+                {
+                    this.PhysicsContainer.Object.DashLeft();
+                }
+                else
+                {
+                    if (this.FacingRight)
+                    {
+                        this.PhysicsContainer.Object.DashRight();
+                    }
+                    else
+                    {
+                        this.PhysicsContainer.Object.DashLeft();
+                    }
                 }
             }
-             */
+        }
 
+        public void StopDashing()
+        {
+            if (this.Dashing)
+            {
+                // you can't stop dashing while in the air
+                if (this.PhysicsContainer.Object.OnGround || this.PhysicsContainer.Object.OnWall())
+                {
+                    this.Dashing = false;
+                    this.PhysicsContainer.Object.StopDashing();
+                }
+                else
+                {
+                    // stop the dash once landed by ending the timer
+                    dashTimer = 0f;
+                }
+            }
+        }
+
+        public void ShootSword(Direction direction)
+        {
             if (checkShootingWeapons())
             {
                 // don't do anything since we're already shooting
@@ -577,21 +664,25 @@ namespace STFU
             {
                 shootWeapon(this.Sword);
 
-                if (Math.Abs(this.PhysicsContainer.Object.body.LinearVelocity.X) > 1)
+                float velocityX = Math.Abs(this.PhysicsContainer.Object.body.LinearVelocity.X);
+                if (velocityX > 1)
                 {
-                    this.Sword.SetBulletDistance(swordDistanceWhenRunning);
+                    if (this.Dashing)
+                        this.Sword.SetBulletDistance(swordDistance + addedSwordDistanceWhenDashing);
+                    else
+                        this.Sword.SetBulletDistance(swordDistance + addedSwordDistanceWhenRunning);
                 }
                 else
                 {
                     this.Sword.SetBulletDistance(swordDistance);
                 }
 
-                if (direction == Direction.Right && !this.PhysicsContainer.Object.onWall())
+                if (direction == Direction.Right && !this.PhysicsContainer.Object.OnWall())
                 {
                     this.FacingRight = true;
                     this.Sword.ShootRight();
                 }
-                else if (direction == Direction.Left && !this.PhysicsContainer.Object.onWall())
+                else if (direction == Direction.Left && !this.PhysicsContainer.Object.OnWall())
                 {
                     this.FacingRight = false;
                     this.Sword.ShootLeft();
@@ -619,12 +710,12 @@ namespace STFU
             {
                 shootWeapon(this.Gun);
 
-                if (direction == Direction.Right && !this.PhysicsContainer.Object.onWall())
+                if (direction == Direction.Right && !this.PhysicsContainer.Object.OnWall())
                 {
                     this.FacingRight = true;
                     this.Gun.ShootRight();
                 }
-                else if (direction == Direction.Left && !this.PhysicsContainer.Object.onWall())
+                else if (direction == Direction.Left && !this.PhysicsContainer.Object.OnWall())
                 {
                     this.FacingRight = false;
                     this.Gun.ShootLeft();

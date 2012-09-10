@@ -467,7 +467,7 @@ namespace STFU
             return false;
         }
 
-        public bool onWall()
+        public bool OnWall()
         {
             if (OnLeftWall || OnRightWall)
                 return true;

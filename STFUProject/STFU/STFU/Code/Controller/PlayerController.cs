@@ -47,8 +47,10 @@ namespace STFU
         protected Keys jumpKey;
         protected Keys shootKey;
         protected Keys meleeKey;
+        protected Keys dashKey;
 
         private bool jumpButtonEnabled;
+        private bool dashButtonEnabled;
 
         // for gamepads
         private const float xThumbStickThreshold = 0.1f;
@@ -68,6 +70,7 @@ namespace STFU
                 jumpKey = Keys.N;
                 shootKey = Keys.M;
                 meleeKey = Keys.OemComma;
+                dashKey = Keys.B;
             }
             else if (player.PlayerIndex == PlayerIndex.Two)
             {
@@ -78,6 +81,7 @@ namespace STFU
                 jumpKey = Keys.Tab;
                 shootKey = Keys.Q;
                 meleeKey = Keys.D1;
+                dashKey = Keys.D2;
             }
             else if (player.PlayerIndex == PlayerIndex.Three)
             {
@@ -131,6 +135,9 @@ namespace STFU
 
                     // melee left
                     HandleMelee(gamePadState.IsButtonDown(Buttons.B), Direction.Left);
+
+                    // dash left
+                    HandleDash(gamePadState.IsButtonDown(Buttons.RightShoulder), Direction.Left);
                 }
                 else if (gamePadState.ThumbSticks.Left.X > xThumbStickThreshold)
                 {
@@ -142,6 +149,9 @@ namespace STFU
 
                     // melee right
                     HandleMelee(gamePadState.IsButtonDown(Buttons.B), Direction.Right);
+
+                    // dash right
+                    HandleDash(gamePadState.IsButtonDown(Buttons.RightShoulder), Direction.Right);
                 }
                 else
                 {
@@ -153,6 +163,9 @@ namespace STFU
 
                     // melee
                     HandleMelee(gamePadState.IsButtonDown(Buttons.B), Direction.None);
+
+                    // dash
+                    HandleDash(gamePadState.IsButtonDown(Buttons.RightShoulder), Direction.None);
                 }
 
                 HandleJump(gamePadState.IsButtonDown(Buttons.A), dt);
@@ -186,6 +199,9 @@ namespace STFU
 
                     // melee left
                     HandleMelee(keyState.IsKeyDown(meleeKey), Direction.Left);
+
+                    // dash left
+                    HandleDash(keyState.IsKeyDown(dashKey), Direction.Left);
                 }
                 else if (keyState.IsKeyDown(rightKey))
                 {
@@ -197,6 +213,9 @@ namespace STFU
 
                     // melee right
                     HandleMelee(keyState.IsKeyDown(meleeKey), Direction.Right);
+
+                    // dash right
+                    HandleDash(keyState.IsKeyDown(dashKey), Direction.Right);
                 }
                 else
                 {
@@ -208,6 +227,9 @@ namespace STFU
 
                     // melee
                     HandleMelee(keyState.IsKeyDown(meleeKey), Direction.None);
+
+                    // dash
+                    HandleDash(keyState.IsKeyDown(dashKey), Direction.None);
                 }
 
                 HandleJump(keyState.IsKeyDown(jumpKey), dt);
@@ -238,6 +260,33 @@ namespace STFU
                 // stop jumping
                 player.StopJumping();
                 jumpButtonEnabled = true;
+            }
+        }
+
+        protected void HandleDash(bool isKeyDown, Direction direction)
+        {
+            if (isKeyDown)
+            {
+                //Console.WriteLine("DASH KEY");
+                //player.Dash();
+
+                if (dashButtonEnabled)
+                {
+                    // start dashing
+                    player.StartDashing(direction);
+                    dashButtonEnabled = false;
+                }
+                else
+                {
+                    // keep dashing
+                    player.KeepDashing(direction);
+                }
+            }
+            else
+            {
+                // stop dashing
+                player.StopDashing();
+                dashButtonEnabled = true;
             }
         }
 

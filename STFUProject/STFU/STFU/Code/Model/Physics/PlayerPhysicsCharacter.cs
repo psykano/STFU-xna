@@ -30,7 +30,7 @@ namespace STFU
         private Vector2 airControlForce;
 
         // Resources
-        private float runSpeed;
+        private float moveSpeed;
         private float airControlSpeed;
         private float jumpImpulse;
         private float wallJumpImpulse;
@@ -52,6 +52,11 @@ namespace STFU
         private bool nextOnRightWall;
         private const float onGroundOrWallDelay = 0.05f;
 
+        private float runSpeed;
+        private float runAirControlSpeed;
+        private float dashMultiplier;
+        private const float dashFrictionOffsetVelX = 1.7f; // the 1.7 accounts for friction when dashing
+
         private const string physicsSettings = "PlayerPhysicsCharacter";
 
         public PlayerPhysicsCharacter(Entity owner, World world, Vector2 position, float width, float height, float density, OnCollision onCollision, OnSeparation onSeparation)
@@ -60,12 +65,13 @@ namespace STFU
             // Load resources
             ConfigFile configFile = PhysicsSystem.GetPhysicsConfigFile();
             runSpeed = configFile.SettingGroups[physicsSettings].Settings["runSpeed"].GetValueAsFloat();
-            airControlSpeed = configFile.SettingGroups[physicsSettings].Settings["airControlSpeed"].GetValueAsFloat();
+            runAirControlSpeed = configFile.SettingGroups[physicsSettings].Settings["airControlSpeed"].GetValueAsFloat();
             jumpImpulse = configFile.SettingGroups[physicsSettings].Settings["jumpImpulse"].GetValueAsFloat();
             wallJumpImpulse = configFile.SettingGroups[physicsSettings].Settings["wallJumpImpulse"].GetValueAsFloat();
             airControlAbility = configFile.SettingGroups[physicsSettings].Settings["airControlAbility"].GetValueAsFloat();
             terminalVelocity = configFile.SettingGroups[physicsSettings].Settings["terminalVelocity"].GetValueAsFloat();
             slideTerminalVelocity = configFile.SettingGroups[physicsSettings].Settings["slideTerminalVelocity"].GetValueAsFloat();
+            dashMultiplier = configFile.SettingGroups[physicsSettings].Settings["dashMultiplier"].GetValueAsFloat();
 
             wallSlideEnabled = false;
             onGroundTimer = new Timer();
@@ -74,6 +80,9 @@ namespace STFU
             enableOnGroundDelay = true;
             enableOnLeftWallDelay = true;
             enableOnRightWallDelay = true;
+
+            moveSpeed = runSpeed;
+            airControlSpeed = runAirControlSpeed;
         }
 
         protected override void performChecks()
@@ -147,7 +156,8 @@ namespace STFU
         public override void Update(float dt)
         {
             base.Update(dt);
-            //Console.WriteLine("velX: {0}", body.LinearVelocity.X);
+
+            //Console.WriteLine("velx: {0}", body.LinearVelocity.X);
 
             onGroundTimer.Update(dt);
             onLeftWallTimer.Update(dt);
@@ -160,7 +170,7 @@ namespace STFU
 
             if (wallSlideEnabled)
             {
-                if (onWall())
+                if (OnWall())
                 {
                     // this helps keep the player on the wall when doing a wall slide
                     if (!OnGround && !checkEdgeCatching())
@@ -252,19 +262,47 @@ namespace STFU
         public void RunLeft(float speedPercent)
         {
             moveOnGround();
-            motor.MotorSpeed = -getSpeedFor(runSpeed, speedPercent);
+            motor.MotorSpeed = -getSpeedFor(moveSpeed, speedPercent);
         }
 
         public void RunRight(float speedPercent)
         {
             moveOnGround();
-            motor.MotorSpeed = getSpeedFor(runSpeed, speedPercent);
+            motor.MotorSpeed = getSpeedFor(moveSpeed, speedPercent);
         }
 
         public void StopRunning()
         {
             // don't brake yet as we need to stop rolling first
             motor.MotorSpeed = 0;
+        }
+
+        public void Dash()
+        {
+            //moveSpeed = dashMultiplier * runSpeed;
+            airControlSpeed = dashMultiplier * runAirControlSpeed;
+
+            // so the player's isn't running while dashing
+            StopRunning();
+        }
+
+        public void DashLeft()
+        {
+            body.LinearVelocity = new Vector2(-airControlSpeed - dashFrictionOffsetVelX, body.LinearVelocity.Y);
+        }
+
+        public void DashRight()
+        {
+            body.LinearVelocity = new Vector2(airControlSpeed + dashFrictionOffsetVelX, body.LinearVelocity.Y);
+        }
+
+        public void StopDashing()
+        {
+            //moveSpeed = runSpeed;
+            airControlSpeed = runAirControlSpeed;
+
+            // so that the player stops short after a dash
+            body.LinearVelocity = new Vector2(0, body.LinearVelocity.Y);
         }
 
         public void FloatLeft(float speedPercent, float dt)
@@ -304,6 +342,7 @@ namespace STFU
         public void StopFloating(float dt)
         {
             moveInAir();
+
             // physics won't naturally handle it the way we want
             body.LinearVelocity = new Vector2(body.LinearVelocity.X - body.LinearVelocity.X / 0.6f * dt, body.LinearVelocity.Y);
         }

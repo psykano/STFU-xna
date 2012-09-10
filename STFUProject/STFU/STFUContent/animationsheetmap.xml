@@ -60,5 +60,6 @@
 <Item><Key>bateyesbig</Key><Value>335 175 10 8</Value></Item>
 <Item><Key>bateyesidle</Key><Value>335 184 10 8</Value></Item>
 <Item><Key>bateyessad</Key><Value>346 175 10 8</Value></Item>
+<Item><Key>playerdash1</Key><Value>289 76 32 32</Value></Item>
 </Asset>
 </XnaContent>

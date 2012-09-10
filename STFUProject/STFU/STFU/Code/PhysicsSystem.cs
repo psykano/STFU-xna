@@ -32,10 +32,6 @@ namespace STFU
         public World world { get; private set; }
         public float Dt { get; set; }
 
-        //private const float FIXED_TIMESTEP = 1f / 120f;
-        // Maximum number of steps in order to avoid degrading to a halt
-        //private const int MAX_STEPS = 4; // since 120/4 = 30. the game will run at a slower speed below 30fps.
-
         private const string settingsIni = "Settings/PhysicsSettings.ini";
         private const string engineSettings = "Engine";
 

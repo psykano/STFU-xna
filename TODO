@@ -1,8 +1,8 @@
 Currently:
-- INI files
-	- do EngineSettings.ini
-		- refactor appropriate physics classes... and maybe some other engine classes?
-	- after having done this, put a binary on github and merge develop into master
+- dashing
+	- dashing trails in representation
+
+- hit stun (probably only when hit by another player in versus)
 
 - make mines (the exploding kind, not the exploring kind)
 

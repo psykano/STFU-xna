@@ -45,6 +45,7 @@ namespace STFU
         protected Animation idleFrozenAnimation;
         protected Animation idleShootAnimation;
         protected Animation runAnimation;
+        protected Animation dashAnimation;
         protected Animation jumpAnimation;
         protected Animation fallAnimation;
         protected WeaponRepresentation<PlayerWeapon> gunRepresentation;
@@ -55,6 +56,7 @@ namespace STFU
         private const string idleAnimationName = "playeridle";
         private const string idleShootAnimationName = "playeridleshoot";
         private const string runAnimationName = "playerrun";
+        private const string dashAnimationName = "playerdash";
         private const string jumpAnimationName = "playerjump";
         private const string fallAnimationName = "playerfall";
         private const string gunAnimationName = "playergun";
@@ -62,8 +64,8 @@ namespace STFU
         private const string swordAnimationName = "playersword";
         private const string swordShotAnimationName = "playerswordslash";
         private const string eyesFrameName = "playereyes";
-        private const float maxCamOffsetX = 100;
-        private const float camScrollRateX = 100;
+        private const float maxCamOffsetX = 60;
+        private const float camScrollRateX = 60;
         private Vector2 eyesOffset;
         private const float eyesOffsetX = 2;
         private const float eyesOffsetY = -6;
@@ -133,6 +135,11 @@ namespace STFU
             int runFrameTime = 25;
             runAnimation = new Animation();
             runAnimation.Initialize(spriteSheet, Vector2.Zero, runAnimationName, runFrameTime, this.color, spritePaddingScale, spriteEffects, true);
+
+            // dash animation
+            int dashFrameTime = 0;
+            dashAnimation = new Animation();
+            dashAnimation.Initialize(spriteSheet, Vector2.Zero, dashAnimationName, dashFrameTime, this.color, spritePaddingScale, spriteEffects, false);
 
             // jumping animation
             int jumpFrameTime = 120;
@@ -219,7 +226,11 @@ namespace STFU
             // First, get the state
             if (player.State == State.Idle)
             {
-                if (player.WeaponActive())
+                if (player.Dashing)
+                {
+                    currentAnimation = dashAnimation;
+                }
+                else if (player.WeaponActive())
                 {
                     if (player.WeaponActiveAndVertical())
                     {
@@ -246,6 +257,11 @@ namespace STFU
             else if (player.State == State.Falling)
             {
                 currentAnimation = fallAnimation;
+            }
+
+            if (player.Dashing)
+            {
+                // make trails?
             }
 
             // Next, check the events
@@ -337,6 +353,10 @@ namespace STFU
                 {
                     eyesOffset.Y -= 2;
                 }
+            }
+            else if (currentAnimation == dashAnimation)
+            {
+                eyesOffset.Y += 2;
             }
         }
 
