@@ -538,7 +538,7 @@ namespace STFU
 
 
             // Draw the parallax background
-
+            
             playerRepresentation.Cam.Parallax = 0.66f;
             spriteBatch.Begin(SpriteSortMode.BackToFront,
                         BlendState.AlphaBlend,
@@ -551,10 +551,10 @@ namespace STFU
             GameVariables.CamPosition = playerRepresentation.Cam.ParallaxPosition;
             representationManager.MapRepresentation.DrawBackground(spriteBatch);
             spriteBatch.End();
-
+            
 
             // Draw the other things
-
+            
             playerRepresentation.Cam.Parallax = 1f;
             spriteBatch.Begin(SpriteSortMode.BackToFront,
                         BlendState.AlphaBlend,

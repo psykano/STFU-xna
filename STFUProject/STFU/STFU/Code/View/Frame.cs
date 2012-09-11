@@ -70,7 +70,10 @@ namespace STFU
         }
 
         // Set the opacity
-        public float Opacity
+        public float Opacity { get; set; }
+
+        // Set the alpha
+        public float Alpha
         {
             get
             {

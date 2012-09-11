@@ -23,7 +23,7 @@ namespace STFU
 
 
         // The scale used to display the sprite strip
-        float scale;
+        public float Scale { get; set; }
 
 
         // The time since we last updated the frame (in milliseconds)
@@ -102,7 +102,8 @@ namespace STFU
             this.name = name;
             this.frameTime = frameTime;
             this.Color = color;
-            this.scale = scale;
+            this.Opacity = 1f;
+            this.Scale = scale;
             SpriteEffects = spriteEffects;
             this.Looping = looping;
             LayerDepth = 0.2f; // default layer depth
@@ -189,7 +190,7 @@ namespace STFU
             Height = sourceRect.Height;
 
             // Place the frame in the correct location on the screen
-            destinationRect = new Rectangle((int)Position.X, (int)Position.Y, (int)(Width * scale), (int)(Height * scale));
+            destinationRect = new Rectangle((int)Position.X, (int)Position.Y, (int)(Width * Scale), (int)(Height * Scale));
         }
 
 
@@ -201,7 +202,7 @@ namespace STFU
 
             origin.X = Width * 0.5f;
             origin.Y = Height * 0.5f;
-            spriteBatch.Draw(spriteSheet.Sheet, destinationRect, sourceRect, Color, Rotation, origin, SpriteEffects, LayerDepth);
+            spriteBatch.Draw(spriteSheet.Sheet, destinationRect, sourceRect, Color * this.Opacity, Rotation, origin, SpriteEffects, LayerDepth);
         }
 
 
@@ -215,7 +216,10 @@ namespace STFU
         }
 
         // Set the opacity
-        public float Opacity
+        public float Opacity { get; set; }
+
+        // Set the alpha
+        public float Alpha
         {
             get
             {

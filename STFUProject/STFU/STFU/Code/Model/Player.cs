@@ -77,6 +77,9 @@ namespace STFU
         private float dashDelay;
         private Direction lastDashDirection;
 
+        public List<Vector2> DashTrailList { get; set; }
+        private const int dashTrails = 3;
+
         // Constructor
         public Player(World world, PlayerIndex playerIndex, PlayerEvent playerEvent)
             : base(world)
@@ -112,6 +115,8 @@ namespace STFU
             this.Sword = new PlayerWeapon(world, this);
             this.Sword.SetUpWeapon(1, 0.8f, 10, 36, swordDistance, 3f, false);
             this.Sword.RotateWhenShooting(40f, 0, 180);
+
+            this.DashTrailList = new List<Vector2>();
         }
 
         public void SetUpPlayer(Vector2 playerStartPosition, int health)
@@ -294,6 +299,22 @@ namespace STFU
             this.Sword.Update(dt);
             Vector2 swordOffset = new Vector2(0, ConvertUnits.ToSimUnits(-6));
             updateWeaponPosition(this.Sword, swordOffset);
+
+            if (this.Dashing)
+            {
+                this.DashTrailList.Add(this.ScreenPosition);
+                if (this.DashTrailList.Count > dashTrails)
+                {
+                    this.DashTrailList.RemoveAt(0);
+                }
+            }
+            else
+            {
+                if (this.DashTrailList.Count > 0)
+                {
+                    this.DashTrailList.RemoveAt(0);
+                }
+            }
         }
 
         protected override void updateWhenDead(float dt)

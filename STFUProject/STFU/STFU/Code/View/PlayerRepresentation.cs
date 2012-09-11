@@ -178,8 +178,6 @@ namespace STFU
         {
             base.Update(dt);
 
-            //BoundingFrustum test = new BoundingFrustum(
-
             // Update the weapons, regardless whether the player is dead
             gunRepresentation.Update(dt);
             swordRepresentation.Update(dt);
@@ -288,6 +286,50 @@ namespace STFU
                 float playerLayerDepth = 0.19f;
 
                 // Draw the current animation
+                // but first, check for dash trails
+                if (player.DashTrailList.Count > 0)
+                {
+                    Vector2 oldPosition = currentAnimation.Position;
+                    float oldAlpha = currentAnimation.Alpha;
+                    float oldOpacity = currentAnimation.Opacity;
+                    float oldLayerDepth = currentAnimation.LayerDepth;
+
+                    int i = 0;
+                    foreach (Vector2 trailPos in player.DashTrailList)
+                    {
+                        /*
+                        if (i == 0)
+                        {
+                            currentAnimation.Opacity = 0.2f;
+                        }
+                        else if (i == 1)
+                        {
+                            currentAnimation.Opacity = 0.4f;
+                        }
+                        else if (i == 2)
+                        {
+                            currentAnimation.Opacity = 0.6f;
+                        }
+                         */
+
+                        currentAnimation.Position = trailPos;
+                        currentAnimation.Alpha = 0.3f;
+                        currentAnimation.Opacity = 0.6f;
+                        currentAnimation.Update(0);
+
+                        // Draw the trail from the current animation
+                        currentAnimation.Draw(spriteBatch);
+                        currentAnimation.LayerDepth = playerLayerDepth + 0.001f;
+
+                        i++;
+                    }
+
+                    currentAnimation.Position = oldPosition;
+                    currentAnimation.Alpha = oldAlpha;
+                    currentAnimation.Opacity = oldOpacity;
+                    currentAnimation.LayerDepth = oldLayerDepth;
+                    currentAnimation.Update(0);
+                }
                 currentAnimation.Draw(spriteBatch);
                 currentAnimation.LayerDepth = playerLayerDepth;
 
