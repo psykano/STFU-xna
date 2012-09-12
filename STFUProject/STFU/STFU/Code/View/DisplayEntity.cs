@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace STFU
 {
@@ -17,8 +18,29 @@ namespace STFU
     abstract class DisplayEntity
     {
         public Vector2 Position { get; set; }
+        public float Rotation { get; set; }
+        public float Scale { get; set; }
+        public float LayerDepth { get; set; }
+        public SpriteEffects SpriteEffects { get; set; }
         public int Width { get; protected set; }
         public int Height { get; protected set; }
+        public SpriteSheet SpriteSheet { get; protected set; }
+        public Rectangle SourceRect { get; protected set; }
+        public Rectangle DestinationRect { get; protected set; }
+
+        protected Vector2 origin;
+        protected Color color;
+        public Color Color
+        {
+            get
+            {
+                return color;
+            }
+            set
+            {
+                color = value;
+            }
+        }
 
         private Vector2 camPosition;
         private Vector2 camCulling;
@@ -40,6 +62,26 @@ namespace STFU
             }
 
             return true;
+        }
+
+        // Set the opacity
+        public float Opacity { get; set; }
+
+        // Set the alpha
+        public float Alpha
+        {
+            get
+            {
+                return (Color.A / 255f);
+            }
+            set
+            {
+                if (value > 1f)
+                    value = 1f;
+                else if (value < 0f)
+                    value = 0f;
+                color.A = (byte)(value * 255f);
+            }
         }
     }
 }

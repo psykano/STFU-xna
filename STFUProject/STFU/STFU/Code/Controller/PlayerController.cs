@@ -99,6 +99,11 @@ namespace STFU
             {
                 HandleInput(dt);
             }
+            else
+            {
+                // stop
+                player.StopMoving(dt);
+            }
         }
 
         protected void HandleInput(float dt)

@@ -1,11 +1,5 @@
 Currently:
-- dashing
-	- dashing trails in representation
-		- store currentAnimation draw call in some list (or copy the animation...)
-		- determine a set time to draw the previous frames
-		- essentially, I need that pixel shader effect in http://www.youtube.com/watch?v=f1uZvurrhig
-
-- hit stun (probably only when hit by another player in versus)
+- player controls in INI file
 
 - make mines (the exploding kind, not the exploring kind)
 

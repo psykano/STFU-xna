@@ -51,6 +51,7 @@ namespace STFU
         protected WeaponRepresentation<PlayerWeapon> gunRepresentation;
         protected WeaponRepresentation<PlayerWeapon> swordRepresentation;
         protected Frame eyesFrame;
+        protected TrailParticleEmitter dashTrailEmitter;
 
         private PlayerEvent playerEvent;
         private const string idleAnimationName = "playeridle";
@@ -81,6 +82,7 @@ namespace STFU
             this.player = player;
             this.playerEvent = playerEvent;
             this.color = Color.White;
+            dashTrailEmitter = new TrailParticleEmitter();
         }
 
         public void SetUpCamera(Viewport viewport, float levelMapWidth, float levelMapHeight)
@@ -172,110 +174,124 @@ namespace STFU
             // eyes frame
             eyesFrame = new Frame();
             eyesFrame.Initialize(spriteSheet, Vector2.Zero, eyesFrameName, Color.White, spritePaddingScale, spriteEffects);
+
+            // dash trail particle emitter
+            dashTrailEmitter.Initialize(5, 0.05f, 0.2f);
         }
 
         public override void Update(float dt)
         {
             base.Update(dt);
 
-            // Update the weapons, regardless whether the player is dead
-            gunRepresentation.Update(dt);
-            swordRepresentation.Update(dt);
-
-            if (player.Health.Dead)
-                return;
-
-            // Check whether we should be facing left
-            if (player.FacingRight)
+            if (!player.Health.Dead)
             {
-                spriteEffects = SpriteEffects.None;
-
-                camOffset.X += camScrollRateX * dt;
-                if (this.CamOffset.X > maxCamOffsetX)
+                // Check whether we should be facing left
+                if (player.FacingRight)
                 {
-                    camOffset.X = maxCamOffsetX;
-                }
-            }
-            else
-            {
-                spriteEffects = SpriteEffects.FlipHorizontally;
+                    spriteEffects = SpriteEffects.None;
 
-                camOffset.X -= camScrollRateX * dt;
-                if (this.CamOffset.X < -maxCamOffsetX)
-                {
-                    camOffset.X = -maxCamOffsetX;
-                }
-            }
-
-            // Update camera
-            this.Cam.Update(dt);
-            this.Cam.Position = player.ScreenPosition + this.CamOffset;
-
-            // Update running speed
-            if (Math.Abs(player.PhysicsContainer.Object.body.LinearVelocity.X) < 3)
-            {
-                runAnimation.frameTime = 50;
-            }
-            else
-            {
-                runAnimation.frameTime = 25;
-            }
-
-            // First, get the state
-            if (player.State == State.Idle)
-            {
-                if (player.Dashing)
-                {
-                    currentAnimation = dashAnimation;
-                }
-                else if (player.WeaponActive())
-                {
-                    if (player.WeaponActiveAndVertical())
+                    camOffset.X += camScrollRateX * dt;
+                    if (this.CamOffset.X > maxCamOffsetX)
                     {
-                        currentAnimation = idleFrozenAnimation;
-                    }
-                    else
-                    {
-                        currentAnimation = idleShootAnimation;
+                        camOffset.X = maxCamOffsetX;
                     }
                 }
                 else
                 {
-                    currentAnimation = idleAnimation;
+                    spriteEffects = SpriteEffects.FlipHorizontally;
+
+                    camOffset.X -= camScrollRateX * dt;
+                    if (this.CamOffset.X < -maxCamOffsetX)
+                    {
+                        camOffset.X = -maxCamOffsetX;
+                    }
                 }
-            }
-            else if (player.State == State.Running)
-            {
-                currentAnimation = runAnimation;
-            }
-            else if (player.State == State.Jumping)
-            {
-                currentAnimation = jumpAnimation;
-            }
-            else if (player.State == State.Falling)
-            {
-                currentAnimation = fallAnimation;
+
+                // Update camera
+                this.Cam.Update(dt);
+                this.Cam.Position = player.ScreenPosition + this.CamOffset;
+
+                // Update running speed
+                if (Math.Abs(player.PhysicsContainer.Object.body.LinearVelocity.X) < 3)
+                {
+                    runAnimation.FrameTime = 50;
+                }
+                else
+                {
+                    runAnimation.FrameTime = 25;
+                }
+
+                // First, get the state
+                if (player.State == State.Idle)
+                {
+                    if (player.Health.Hit)
+                    {
+                        currentAnimation = idleFrozenAnimation;
+                    }
+                    else if (player.Dashing)
+                    {
+                        currentAnimation = dashAnimation;
+                    }
+                    else if (player.WeaponActive())
+                    {
+                        if (player.WeaponActiveAndVertical())
+                        {
+                            currentAnimation = idleFrozenAnimation;
+                        }
+                        else
+                        {
+                            currentAnimation = idleShootAnimation;
+                        }
+                    }
+                    else
+                    {
+                        currentAnimation = idleAnimation;
+                    }
+                }
+                else if (player.State == State.Running)
+                {
+                    currentAnimation = runAnimation;
+                }
+                else if (player.State == State.Jumping)
+                {
+                    currentAnimation = jumpAnimation;
+                }
+                else if (player.State == State.Falling)
+                {
+                    currentAnimation = fallAnimation;
+                }
+
+                // Next, check the events
+                CheckEvents();
+
+                // Only update the animation for the current state
+                currentAnimation.Position = player.ScreenPosition + shakePositionOffset;
+                currentAnimation.Rotation = player.ScreenRotation;
+                currentAnimation.Update(dt);
+                currentAnimation.SpriteEffects = spriteEffects;
+
+                // Update the eyes
+                adjustEyesOffset();
+                eyesFrame.Position = player.ScreenPosition + eyesOffset + shakePositionOffset;
+                eyesFrame.Rotation = player.ScreenRotation;
+                eyesFrame.SpriteEffects = spriteEffects;
             }
 
-            if (player.Dashing)
+            // Update the weapons, regardless whether the player is dead
+            gunRepresentation.Update(dt);
+            swordRepresentation.Update(dt);
+
+            // Update the dashing trail
+            if (player.Dashing && !player.Health.Dead)
             {
-                // make trails?
+                dashTrailEmitter.Run();
             }
-
-            // Next, check the events
-            CheckEvents();
-
-            // Only update the animation for the current state
-            currentAnimation.Position = player.ScreenPosition;
-            currentAnimation.Rotation = player.ScreenRotation;
-            currentAnimation.Update(dt);
-            currentAnimation.SpriteEffects = spriteEffects;
-
-            // Update the eyes
-            adjustEyesOffset();
-            eyesFrame.Position = player.ScreenPosition + eyesOffset;
-            eyesFrame.Rotation = player.ScreenRotation;
-            eyesFrame.SpriteEffects = spriteEffects;
+            else
+            {
+                dashTrailEmitter.Stop();
+            }
+            dashTrailEmitter.DisplayEntity = currentAnimation;
+            dashTrailEmitter.Update(dt);
         }
 
         public override void Draw(SpriteBatch spriteBatch)
@@ -286,50 +302,6 @@ namespace STFU
                 float playerLayerDepth = 0.19f;
 
                 // Draw the current animation
-                // but first, check for dash trails
-                if (player.DashTrailList.Count > 0)
-                {
-                    Vector2 oldPosition = currentAnimation.Position;
-                    float oldAlpha = currentAnimation.Alpha;
-                    float oldOpacity = currentAnimation.Opacity;
-                    float oldLayerDepth = currentAnimation.LayerDepth;
-
-                    int i = 0;
-                    foreach (Vector2 trailPos in player.DashTrailList)
-                    {
-                        /*
-                        if (i == 0)
-                        {
-                            currentAnimation.Opacity = 0.2f;
-                        }
-                        else if (i == 1)
-                        {
-                            currentAnimation.Opacity = 0.4f;
-                        }
-                        else if (i == 2)
-                        {
-                            currentAnimation.Opacity = 0.6f;
-                        }
-                         */
-
-                        currentAnimation.Position = trailPos;
-                        currentAnimation.Alpha = 0.3f;
-                        currentAnimation.Opacity = 0.6f;
-                        currentAnimation.Update(0);
-
-                        // Draw the trail from the current animation
-                        currentAnimation.Draw(spriteBatch);
-                        currentAnimation.LayerDepth = playerLayerDepth + 0.001f;
-
-                        i++;
-                    }
-
-                    currentAnimation.Position = oldPosition;
-                    currentAnimation.Alpha = oldAlpha;
-                    currentAnimation.Opacity = oldOpacity;
-                    currentAnimation.LayerDepth = oldLayerDepth;
-                    currentAnimation.Update(0);
-                }
                 currentAnimation.Draw(spriteBatch);
                 currentAnimation.LayerDepth = playerLayerDepth;
 
@@ -337,14 +309,20 @@ namespace STFU
                 eyesFrame.Draw(spriteBatch);
                 eyesFrame.LayerDepth = currentAnimation.LayerDepth - 0.001f;
 
-                // Draw the weapons
-                gunRepresentation.Draw(spriteBatch);
-                swordRepresentation.Draw(spriteBatch);
+                // Draw the weapons if the player isn't hit
+                if (!player.Health.Hit)
+                {
+                    gunRepresentation.Draw(spriteBatch);
+                    swordRepresentation.Draw(spriteBatch);
+                }
             }
 
             // Draw the bullets
             gunRepresentation.DrawBullets(spriteBatch);
             swordRepresentation.DrawBullets(spriteBatch);
+
+            // Draw the dash trails
+            dashTrailEmitter.Draw(spriteBatch);
         }
 
         private void adjustEyesOffset()

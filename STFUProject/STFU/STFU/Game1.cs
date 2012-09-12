@@ -56,8 +56,6 @@ namespace STFU
 
         Texture2D tmpTex;
 
-        int numPlayers;
-
         private float gameSpeed;
         private int defaultResolutionHeight;
         private bool enableDebugging;
@@ -111,7 +109,10 @@ namespace STFU
             playersFixedTimeStep = new FixedTimeStepSystem(fixedTimestep, maxSteps, new SingleStep(PlayersSingleStep), new PostStepping(PlayersPostStepping));
             fixedTimeStep = new FixedTimeStepSystem(fixedTimestep * 2f, maxSteps, new SingleStep(SingleStep), new PostStepping(PostStepping));
 
-            numPlayers = 1;
+            // general settings
+            GameVariables.NumPlayers = configFile.SettingGroups[generalSettings].Settings["NumPlayers"].GetValueAsInt();
+            GameVariables.Difficulty = configFile.SettingGroups[generalSettings].Settings["Difficulty"].GetValueAsInt();
+            GameVariables.Pvp = configFile.SettingGroups[generalSettings].Settings["Pvp"].GetValueAsBool();
         }
 
         public void SetVsync(bool enable)
@@ -171,12 +172,12 @@ namespace STFU
             mapRepresentation.LoadContent(Content);
             representationManager.Add(mapRepresentation);
 
-            GameVariables.NumPlayers = numPlayers;
             GameVariables.LevelHeight = map.LevelMap.Height;
             GameVariables.EnemyRespawnDelay = 10f;
             GameVariables.CamCulling = new Vector2(640 * 0.5f, 360 * 0.5f);
 
             // create the players
+            int numPlayers = GameVariables.NumPlayers;
             CreatePlayer((int)PlayerIndex.One);
             if (numPlayers > 1)
             {
@@ -271,6 +272,7 @@ namespace STFU
             bottomLeftViewport = defaultViewport;
             bottomRightViewport = defaultViewport;
 
+            int numPlayers = GameVariables.NumPlayers;
             if (numPlayers == 2)
             {
                 topLeftViewport.Width = topLeftViewport.Width / 2 - 2;
@@ -307,6 +309,7 @@ namespace STFU
             playerRepresentation = representationManager.GetPlayerRepresentationWithIndex(PlayerIndex.One);
             playerRepresentation.SetUpCamera(topLeftViewport, map.LevelMap.Width, map.LevelMap.Height);
 
+            int numPlayers = GameVariables.NumPlayers;
             if (numPlayers > 1)
             {
                 playerRepresentation = representationManager.GetPlayerRepresentationWithIndex(PlayerIndex.Two);
@@ -431,6 +434,7 @@ namespace STFU
 
                 GraphicsDevice.Viewport = topLeftViewport;
                 DrawDebugScene(0);
+                int numPlayers = GameVariables.NumPlayers;
                 if (numPlayers > 1)
                 {
                     GraphicsDevice.Viewport = topRightViewport;
@@ -497,6 +501,7 @@ namespace STFU
 
                 GraphicsDevice.Viewport = topLeftViewport;
                 DrawScene(0);
+                int numPlayers = GameVariables.NumPlayers;
                 if (numPlayers > 1)
                 {
                     GraphicsDevice.Viewport = topRightViewport;
@@ -531,7 +536,7 @@ namespace STFU
             
             // depends on the current resolution
             playerRepresentation.Cam.Zoom = resolutionRatio();
-            if (numPlayers == 1)
+            if (GameVariables.NumPlayers == 1)
             {
                 playerRepresentation.Cam.Zoom *= 2;
             }
@@ -575,7 +580,7 @@ namespace STFU
             PlayerRepresentation playerRepresentation = representationManager.GetPlayerRepresentationWithIndex((PlayerIndex)playerIndex);
 
             playerRepresentation.Cam.Zoom = resolutionRatio();
-            if (numPlayers == 1)
+            if (GameVariables.NumPlayers == 1)
             {
                 playerRepresentation.Cam.Zoom *= 2;
             }
@@ -594,6 +599,7 @@ namespace STFU
         // Drop-in
         public void AddPlayer()
         {
+            int numPlayers = GameVariables.NumPlayers;
             if (numPlayers < 4)
             {
                 numPlayers++;
@@ -625,6 +631,7 @@ namespace STFU
         // Drop-out
         public void SubtractPlayer() // here *** so refactor this then refactor the above, [AddPlayer()]
         {
+            int numPlayers = GameVariables.NumPlayers;
             if (numPlayers < 2)
                 return;
 

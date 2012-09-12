@@ -25,6 +25,32 @@ namespace STFU
             }
         }
 
+        private static int difficulty;
+        public static int Difficulty
+        {
+            get
+            {
+                return difficulty;
+            }
+            set
+            {
+                difficulty = value;
+            }
+        }
+
+        private static bool pvp;
+        public static bool Pvp
+        {
+            get
+            {
+                return pvp;
+            }
+            set
+            {
+                pvp = value;
+            }
+        }
+
         private static float levelHeight;
         public static float LevelHeight
         {

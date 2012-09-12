@@ -77,9 +77,6 @@ namespace STFU
         private float dashDelay;
         private Direction lastDashDirection;
 
-        public List<Vector2> DashTrailList { get; set; }
-        private const int dashTrails = 3;
-
         // Constructor
         public Player(World world, PlayerIndex playerIndex, PlayerEvent playerEvent)
             : base(world)
@@ -115,8 +112,16 @@ namespace STFU
             this.Sword = new PlayerWeapon(world, this);
             this.Sword.SetUpWeapon(1, 0.8f, 10, 36, swordDistance, 3f, false);
             this.Sword.RotateWhenShooting(40f, 0, 180);
+        }
 
-            this.DashTrailList = new List<Vector2>();
+        public override bool Controllable()
+        {
+            if (this.Health.Hit)
+            {
+                return false;
+            }
+
+            return base.Controllable();
         }
 
         public void SetUpPlayer(Vector2 playerStartPosition, int health)
@@ -299,22 +304,6 @@ namespace STFU
             this.Sword.Update(dt);
             Vector2 swordOffset = new Vector2(0, ConvertUnits.ToSimUnits(-6));
             updateWeaponPosition(this.Sword, swordOffset);
-
-            if (this.Dashing)
-            {
-                this.DashTrailList.Add(this.ScreenPosition);
-                if (this.DashTrailList.Count > dashTrails)
-                {
-                    this.DashTrailList.RemoveAt(0);
-                }
-            }
-            else
-            {
-                if (this.DashTrailList.Count > 0)
-                {
-                    this.DashTrailList.RemoveAt(0);
-                }
-            }
         }
 
         protected override void updateWhenDead(float dt)
@@ -377,6 +366,11 @@ namespace STFU
             this.Health.GotHit(1);
         }
 
+        private void gotHitByPlayer()
+        {
+            this.Health.GotHit(1);
+        }
+
         protected bool onCollision(Fixture fix1, Fixture fix2, Contact contact)
         {
             if (fix2.CollisionCategories.HasFlag(GameConstants.DeathCollisionCategory))
@@ -398,6 +392,15 @@ namespace STFU
                 gotHitByEnemy();
 
                 return false;
+            }
+            else if (GameVariables.Pvp && fix2.CollisionCategories.HasFlag(GameConstants.PlayerBulletCollisionCategory))
+            {
+                if (!this.Health.CheckInvulnerable())
+                {
+                    gotHitByPlayer();
+                }
+
+                return true;
             }
 
             if (fix2.CollisionCategories.HasFlag(GameConstants.PlatformCollisionCategory))
@@ -689,7 +692,9 @@ namespace STFU
                 if (velocityX > 1)
                 {
                     if (this.Dashing)
+                    {
                         this.Sword.SetBulletDistance(swordDistance + addedSwordDistanceWhenDashing);
+                    }
                     else
                         this.Sword.SetBulletDistance(swordDistance + addedSwordDistanceWhenRunning);
                 }

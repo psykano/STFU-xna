@@ -17,26 +17,39 @@ namespace STFU
     /// </summary>
     abstract class LivingEntityRepresentation : EntityRepresentation
     {
+        protected LivingEntity livingEntity;
+
+        // for blinking
         protected bool blink;
         protected Timer blinkTimer;
         protected const float blinkDelay = 0.0314f;
-        protected LivingEntity livingEntity;
+
+        // for shaking
+        protected Random randomShake;
+        protected Vector2 shakePositionOffset;
+        protected Timer shakeTimer;
+        protected const float shakeDelay = 0.02f;
+        protected const float shakeIntensity = 5.0f;
 
         public LivingEntityRepresentation(LivingEntity livingEntity)
         {
             this.livingEntity = livingEntity;
             blink = false;
             blinkTimer = new Timer();
+            randomShake = new Random();
+            shakePositionOffset = Vector2.Zero;
+            shakeTimer = new Timer();
         }
 
         public override void Update(float dt)
         {
             checkBlink(dt);
+            checkShake(dt);
         }
 
         protected void checkBlink(float dt)
         {
-            if (livingEntity.Health.Hit || livingEntity.Health.Recovering || livingEntity.Health.Dead)
+            if (livingEntity.Health.Recovering || livingEntity.Health.Dead)
             {
                 doBlink(dt);
             }
@@ -52,8 +65,8 @@ namespace STFU
 
             if (blinkTimer.IsTimeUp())
             {
-                toggleBlink();
                 blinkTimer.SetDelay(blinkDelay);
+                toggleBlink();
             }
         }
 
@@ -69,6 +82,36 @@ namespace STFU
                 blink = false;
             else
                 blink = true;
+        }
+
+        protected void checkShake(float dt)
+        {
+            if (livingEntity.Health.Hit)
+            {
+                shakeTimer.Update(dt);
+
+                if (shakeTimer.IsTimeUp())
+                {
+                    shakeTimer.SetAccumulatedDelay(shakeDelay);
+                    doShake();
+                }
+            }
+            else
+            {
+                shakePositionOffset = Vector2.Zero;
+            }
+        }
+
+        protected void doShake()
+        {
+            float randomDouble = (float)randomShake.NextDouble();
+            randomDouble *= 0.6f;
+            randomDouble += 0.4f;
+
+            if (shakePositionOffset.X < 0)
+                shakePositionOffset.X = randomDouble * shakeIntensity;
+            else
+                shakePositionOffset.X = -randomDouble * shakeIntensity;
         }
     }
 }

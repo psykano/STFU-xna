@@ -272,7 +272,10 @@ namespace STFU
         public void ChangeRotationFromDownToForward()
         {
             if (this.Rotation == (float)Math.PI * 0.5f)
+            {
+                this.Vertical = false;
                 this.Rotation = 0f;
+            }
         }
     }
 }

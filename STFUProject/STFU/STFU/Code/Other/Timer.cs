@@ -13,6 +13,7 @@ namespace STFU
     class Timer
     {
         private float time;
+        private float delay;
 
         // Constructor
         public Timer()
@@ -47,8 +48,8 @@ namespace STFU
 
         public void SetDelay(float delay)
         {
-            time = 0;
-            time -= delay;
+            this.delay = delay;
+            time = -delay;
         }
 
         public bool IsTimeUp()
@@ -66,6 +67,28 @@ namespace STFU
         public float Time()
         {
             return -time;
+        }
+
+        public float PercentFromTimeUp()
+        {
+            if (time >= 0)
+            {
+                return 0f;
+            }
+            else
+            {
+                return -time / delay;
+            }
+        }
+
+        public void SetAccumulatedDelay(float delay)
+        {
+            this.delay = delay;
+            if (IsReset())
+            {
+                time = 0;
+            }
+            time -= delay;
         }
     }
 }

@@ -191,8 +191,10 @@
     <Compile Include="Code\View\Frame.cs" />
     <Compile Include="Code\View\LivingEntityRepresentation.cs" />
     <Compile Include="Code\View\MapRepresentation.cs" />
+    <Compile Include="Code\View\Particle.cs" />
     <Compile Include="Code\View\PlayerRepresentation.cs" />
     <Compile Include="Code\View\RepresentationManager.cs" />
+    <Compile Include="Code\View\TrailParticleEmitter.cs" />
     <Compile Include="Code\View\WeaponRepresentation.cs" />
     <Compile Include="FixedTimeStepSystem.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

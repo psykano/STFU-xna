@@ -32,12 +32,6 @@ namespace STFU
         protected Animation currentAnimation;
         protected Frame currentEyesFrame;
         protected Vector2 eyesOffset;
-
-        private Random randomShake;
-        private Vector2 shakePositionOffset;
-        private Timer shakeTimer;
-        private const float shakeDelay = 0.03f;
-        private const float shakeIntensity = 2.5f;
         private const float showRespawningTime = 1.5f;
 
         // Constructor
@@ -47,9 +41,6 @@ namespace STFU
             this.enemy = enemy;
             this.enemyEvent = enemyEvent;
             this.color = Color.Red; // enemies are red by default
-            randomShake = new Random();
-            shakePositionOffset = Vector2.Zero;
-            shakeTimer = new Timer();
         }
 
         public override void Update(float dt)
@@ -118,6 +109,7 @@ namespace STFU
 
         protected void updateCurrentAnimation(float dt)
         {
+            /*
             // shake enemy if hit
             if (enemy.Health.Hit)
             {
@@ -125,14 +117,15 @@ namespace STFU
 
                 if (shakeTimer.IsTimeUp())
                 {
+                    shakeTimer.SetAccumulatedDelay(shakeDelay);
                     shakeEnemy();
-                    shakeTimer.SetDelay(shakeDelay);
                 }
             }
             else
             {
                 shakePositionOffset = Vector2.Zero;
             }
+             */
 
             currentAnimation.Position = enemy.ScreenPosition + shakePositionOffset;
             currentAnimation.Rotation = enemy.ScreenRotation;
@@ -156,8 +149,7 @@ namespace STFU
             currentAnimation.Position = enemy.SpawnPosition;
             currentAnimation.Rotation = 0;
 
-            float opacity = 1f - (enemy.Health.RespawnTimer.Time() / showRespawningTime);
-            currentAnimation.Opacity = opacity;
+            currentAnimation.Opacity = 1f - (enemy.Health.RespawnTimer.Time() / showRespawningTime);
 
             currentAnimation.Update(dt);
             currentAnimation.SpriteEffects = spriteEffects;
@@ -168,7 +160,7 @@ namespace STFU
                 adjustEyesOffset();
                 currentEyesFrame.Position = enemy.SpawnPosition + eyesOffset;
                 currentEyesFrame.Rotation = 0;
-                currentEyesFrame.Opacity = opacity;
+                currentEyesFrame.Opacity = currentAnimation.Opacity;
                 currentEyesFrame.SpriteEffects = spriteEffects;
             }
         }
@@ -177,16 +169,18 @@ namespace STFU
         {
         }
 
+        /*
         private void shakeEnemy()
         {
             float randomDouble = (float)randomShake.NextDouble();
-            if (randomDouble < 0.5f)
-                randomDouble *= 2.0f;
+            randomDouble *= 0.6f;
+            randomDouble += 0.4f;
 
             if (shakePositionOffset.X < 0)
                 shakePositionOffset.X = randomDouble * shakeIntensity;
             else
                 shakePositionOffset.X = -randomDouble * shakeIntensity;
         }
+         */
     }
 }
