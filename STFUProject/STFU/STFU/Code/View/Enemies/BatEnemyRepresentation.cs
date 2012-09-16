@@ -52,6 +52,7 @@ namespace STFU
             int idleFrameTime = 40;
             idleAnimation = new Animation();
             idleAnimation.Initialize(spriteSheet, Vector2.Zero, idleAnimationName, idleFrameTime, this.color, 1, spriteEffects, false);
+            idleAnimation.LayerDepth = enemyLayerDepth;
             // make this the current animation
             currentAnimation = idleAnimation;
 
@@ -59,31 +60,37 @@ namespace STFU
             int flyFrameTime = 30;
             flyAnimation = new Animation();
             flyAnimation.Initialize(spriteSheet, Vector2.Zero, flyAnimationName, flyFrameTime, this.color, 1, spriteEffects, false);
+            flyAnimation.LayerDepth = enemyLayerDepth;
 
             // dive animation
             int diveFrameTime = 30;
             diveAnimation = new Animation();
             diveAnimation.Initialize(spriteSheet, Vector2.Zero, diveAnimationName, diveFrameTime, this.color, 1, spriteEffects, true);
+            diveAnimation.LayerDepth = enemyLayerDepth;
 
             // hit animation
             int hitFrameTime = 30;
             hitAnimation = new Animation();
             hitAnimation.Initialize(spriteSheet, Vector2.Zero, hitAnimationName, hitFrameTime, this.color, 1, spriteEffects, true);
+            hitAnimation.LayerDepth = enemyLayerDepth;
 
             // Load eyes:
             // idle eyes
             eyesIdleFrame = new Frame();
             eyesIdleFrame.Initialize(spriteSheet, Vector2.Zero, eyesIdleFrameName, Color.White, 1, spriteEffects);
+            eyesIdleFrame.LayerDepth = enemyLayerDepth - 0.001f;
             // make this the current eyes frame
             currentEyesFrame = eyesIdleFrame;
 
             // big eyes
             eyesBigFrame = new Frame();
             eyesBigFrame.Initialize(spriteSheet, Vector2.Zero, eyesBigFrameName, Color.White, 1, spriteEffects);
+            eyesBigFrame.LayerDepth = enemyLayerDepth - 0.001f;
 
             // sad eyes
             eyesSadFrame = new Frame();
             eyesSadFrame.Initialize(spriteSheet, Vector2.Zero, eyesSadFrameName, Color.White, 1, spriteEffects);
+            eyesSadFrame.LayerDepth = enemyLayerDepth - 0.001f;
         }
 
         protected override void updateWhenAlive(float dt)

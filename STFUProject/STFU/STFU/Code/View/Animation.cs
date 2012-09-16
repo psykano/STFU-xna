@@ -156,12 +156,17 @@ namespace STFU
 
 
         // Draw the Animation Strip
-        public void Draw(SpriteBatch spriteBatch)
+        public override void Draw(SpriteBatch spriteBatch)
+        {
+            DrawWithColor(spriteBatch, Color);
+        }
+
+        public override void DrawWithColor(SpriteBatch spriteBatch, Color drawColor)
         {
             if (!isVisible())
                 return;
 
-            spriteBatch.Draw(SpriteSheet.Sheet, DestinationRect, SourceRect, Color * Opacity, Rotation, origin, SpriteEffects, LayerDepth);
+            spriteBatch.Draw(SpriteSheet.Sheet, DestinationRect, SourceRect, drawColor * Opacity, Rotation, origin, SpriteEffects, LayerDepth);
         }
 
 

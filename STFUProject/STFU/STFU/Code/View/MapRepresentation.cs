@@ -77,7 +77,7 @@ namespace STFU
             
             groundFrame = new Frame();
             groundFrame.Initialize(spriteSheet, Vector2.Zero, groundFrameName, Color.White, tilePaddingScale, SpriteEffects.None);
-            groundFrame.LayerDepth = 0.1f;
+            groundFrame.LayerDepth = 0.24f;
 
             spikeFrame = new Frame();
             spikeFrame.Initialize(spriteSheet, Vector2.Zero, spikeFrameName, Color.Red, 1f, SpriteEffects.None);

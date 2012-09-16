@@ -75,6 +75,8 @@ namespace STFU
         private const float swordOffsetX = 4;
         private const float swordOffsetY = -6;
 
+        private const float playerLayerDepth = 0.19f;
+
         // Constructor
         public PlayerRepresentation(Player player, PlayerEvent playerEvent)
             : base(player)
@@ -120,6 +122,7 @@ namespace STFU
             int idleFrameTime = 120;
             idleAnimation = new Animation();
             idleAnimation.Initialize(spriteSheet, Vector2.Zero, idleAnimationName, idleFrameTime, this.color, spritePaddingScale, spriteEffects, true);
+            idleAnimation.LayerDepth = playerLayerDepth;
             // make this the current animation
             currentAnimation = idleAnimation;
 
@@ -127,31 +130,37 @@ namespace STFU
             int idleFrozenFrameTime = 0;
             idleFrozenAnimation = new Animation();
             idleFrozenAnimation.Initialize(spriteSheet, Vector2.Zero, idleAnimationName, idleFrozenFrameTime, this.color, spritePaddingScale, spriteEffects, false);
+            idleFrozenAnimation.LayerDepth = playerLayerDepth;
 
             // idle shoot animation
             int idleShootFrameTime = 30;
             idleShootAnimation = new Animation();
             idleShootAnimation.Initialize(spriteSheet, Vector2.Zero, idleShootAnimationName, idleShootFrameTime, this.color, spritePaddingScale, spriteEffects, false);
+            idleShootAnimation.LayerDepth = playerLayerDepth;
 
             // running animation
             int runFrameTime = 25;
             runAnimation = new Animation();
             runAnimation.Initialize(spriteSheet, Vector2.Zero, runAnimationName, runFrameTime, this.color, spritePaddingScale, spriteEffects, true);
+            runAnimation.LayerDepth = playerLayerDepth;
 
             // dash animation
             int dashFrameTime = 0;
             dashAnimation = new Animation();
             dashAnimation.Initialize(spriteSheet, Vector2.Zero, dashAnimationName, dashFrameTime, this.color, spritePaddingScale, spriteEffects, false);
+            dashAnimation.LayerDepth = playerLayerDepth;
 
             // jumping animation
             int jumpFrameTime = 120;
             jumpAnimation = new Animation();
             jumpAnimation.Initialize(spriteSheet, Vector2.Zero, jumpAnimationName, jumpFrameTime, this.color, spritePaddingScale, spriteEffects, false);
+            jumpAnimation.LayerDepth = playerLayerDepth;
 
             // falling animation
             int fallFrameTime = 120;
             fallAnimation = new Animation();
             fallAnimation.Initialize(spriteSheet, Vector2.Zero, fallAnimationName, fallFrameTime, this.color, spritePaddingScale, spriteEffects, false);
+            fallAnimation.LayerDepth = playerLayerDepth;
 
             // gun weapon animations
             int gunFrameTime = 30;
@@ -174,6 +183,7 @@ namespace STFU
             // eyes frame
             eyesFrame = new Frame();
             eyesFrame.Initialize(spriteSheet, Vector2.Zero, eyesFrameName, Color.White, spritePaddingScale, spriteEffects);
+            eyesFrame.LayerDepth = playerLayerDepth - 0.001f;
 
             // dash trail particle emitter
             dashTrailEmitter.Initialize(5, 0.05f, 0.2f);
@@ -297,23 +307,37 @@ namespace STFU
         public override void Draw(SpriteBatch spriteBatch)
         {
             // Draw the player
-            if (!blink && !player.Health.Dead)
+            if (!player.Health.Dead)
             {
-                float playerLayerDepth = 0.19f;
-
-                // Draw the current animation
-                currentAnimation.Draw(spriteBatch);
-                currentAnimation.LayerDepth = playerLayerDepth;
-
-                // Draw the eyes
-                eyesFrame.Draw(spriteBatch);
-                eyesFrame.LayerDepth = currentAnimation.LayerDepth - 0.001f;
-
-                // Draw the weapons if the player isn't hit
-                if (!player.Health.Hit)
+                if (blink)
                 {
-                    gunRepresentation.Draw(spriteBatch);
-                    swordRepresentation.Draw(spriteBatch);
+                    // Draw the current animation
+                    currentAnimation.DrawWithColor(spriteBatch, blinkColor);
+
+                    // Draw the eyes
+                    eyesFrame.DrawWithColor(spriteBatch, blinkColor);
+
+                    // Draw the weapons if the player isn't hit
+                    if (!player.Health.Hit)
+                    {
+                        gunRepresentation.DrawWithColor(spriteBatch, blinkColor);
+                        swordRepresentation.DrawWithColor(spriteBatch, blinkColor);
+                    }
+                }
+                else
+                {
+                    // Draw the current animation
+                    currentAnimation.Draw(spriteBatch);
+
+                    // Draw the eyes
+                    eyesFrame.Draw(spriteBatch);
+
+                    // Draw the weapons if the player isn't hit
+                    if (!player.Health.Hit)
+                    {
+                        gunRepresentation.Draw(spriteBatch);
+                        swordRepresentation.Draw(spriteBatch);
+                    }
                 }
             }
 

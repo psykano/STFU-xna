@@ -1,5 +1,8 @@
 Currently:
 - player controls in INI file
+	- gamepad controls in INI file
+
+- use a shader to flash sprites white when "blink"ing
 
 - make mines (the exploding kind, not the exploring kind)
 

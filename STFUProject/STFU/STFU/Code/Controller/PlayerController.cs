@@ -5,6 +5,7 @@
 using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
+using EasyConfig;
 
 namespace STFU
 {
@@ -49,6 +50,12 @@ namespace STFU
         protected Keys meleeKey;
         protected Keys dashKey;
 
+        // gamepad buttons
+        protected Buttons jumpButton;
+        protected Buttons shootButton;
+        protected Buttons meleeButton;
+        protected Buttons dashButton;
+
         private bool jumpButtonEnabled;
         private bool dashButtonEnabled;
 
@@ -56,41 +63,86 @@ namespace STFU
         private const float xThumbStickThreshold = 0.1f;
         private const float yThumbStickThreshold = 0.15f;
 
+        // settings 
+        private const string inputSettingsIni = "Settings/InputSettings.ini";
+        private const string playerOneInput = "PlayerOne";
+        private const string playerTwoInput = "PlayerTwo";
+        private const string playerThreeInput = "PlayerThree";
+        private const string playerFourInput = "PlayerFour";
+
         // Constructor
         public PlayerController(Player player)
         {
             this.player = player;
 
+            ConfigFile configFile = new ConfigFile(inputSettingsIni);
+            string playerInput = "";
+
             if (player.PlayerIndex == PlayerIndex.One)
             {
-                leftKey = Keys.Left;
-                rightKey = Keys.Right;
-                upKey = Keys.Up;
-                downKey = Keys.Down;
-                jumpKey = Keys.N;
-                shootKey = Keys.M;
-                meleeKey = Keys.OemComma;
-                dashKey = Keys.B;
+                playerInput = playerOneInput;
             }
             else if (player.PlayerIndex == PlayerIndex.Two)
             {
-                leftKey = Keys.A;
-                rightKey = Keys.D;
-                upKey = Keys.W;
-                downKey = Keys.S;
-                jumpKey = Keys.Tab;
-                shootKey = Keys.Q;
-                meleeKey = Keys.D1;
-                dashKey = Keys.D2;
+                playerInput = playerTwoInput;
             }
             else if (player.PlayerIndex == PlayerIndex.Three)
             {
-                // not set up yet
+                playerInput = playerThreeInput;
             }
             else if (player.PlayerIndex == PlayerIndex.Four)
             {
-                // same as above
+                playerInput = playerFourInput;
             }
+
+            // keyboard
+            leftKey = parsePlayerInput<Keys>(configFile, playerInput, "leftKey");
+            rightKey = parsePlayerInput<Keys>(configFile, playerInput, "rightKey");
+            upKey = parsePlayerInput<Keys>(configFile, playerInput, "upKey");
+            downKey = parsePlayerInput<Keys>(configFile, playerInput, "downKey");
+            jumpKey = parsePlayerInput<Keys>(configFile, playerInput, "jumpKey");
+            shootKey = parsePlayerInput<Keys>(configFile, playerInput, "shootKey");
+            meleeKey = parsePlayerInput<Keys>(configFile, playerInput, "meleeKey");
+            dashKey = parsePlayerInput<Keys>(configFile, playerInput, "dashKey");
+
+            // gamepad
+            jumpButton = parsePlayerInput<Buttons>(configFile, playerInput, "jumpButton");
+            shootButton = parsePlayerInput<Buttons>(configFile, playerInput, "shootButton");
+            meleeButton = parsePlayerInput<Buttons>(configFile, playerInput, "meleeButton");
+            dashButton = parsePlayerInput<Buttons>(configFile, playerInput, "dashButton");
+        }
+
+        private T parsePlayerInput<T>(ConfigFile configFile, string playerInput, string key) where T : struct
+        {
+            if (!typeof(T).IsEnum)
+            {
+                throw new ArgumentException("T must be an enumerated type");
+            }
+
+            T value;
+
+            try
+            {
+                int intValue = configFile.SettingGroups[playerInput].Settings[key].GetValueAsInt();
+                value = (T)Convert.ChangeType(intValue, Type.GetTypeCode(typeof(T)));
+                return value;
+            }
+            catch
+            {
+            }
+
+            try
+            {
+                value = (T)Enum.Parse(typeof(T), configFile.SettingGroups[playerInput].Settings[key].GetValueAsString(), true);
+                return value;
+            }
+            catch
+            {
+            }
+
+            // if all else fails
+            value = (T)Convert.ChangeType(0, Type.GetTypeCode(typeof(T)));
+            return value;
         }
 
         public override void Update(float dt)
@@ -116,18 +168,18 @@ namespace STFU
                 if (gamePadState.ThumbSticks.Left.Y > yThumbStickThreshold)
                 {
                     // shoot
-                    HandleShoot(gamePadState.IsButtonDown(Buttons.X), Direction.Up);
+                    HandleShoot(gamePadState.IsButtonDown(shootButton), Direction.Up);
 
                     // melee
-                    HandleMelee(gamePadState.IsButtonDown(Buttons.B), Direction.Up);
+                    HandleMelee(gamePadState.IsButtonDown(meleeButton), Direction.Up);
                 }
                 else if (gamePadState.ThumbSticks.Left.Y < -yThumbStickThreshold)
                 {
                     // shoot
-                    HandleShoot(gamePadState.IsButtonDown(Buttons.X), Direction.Down);
+                    HandleShoot(gamePadState.IsButtonDown(shootButton), Direction.Down);
 
                     // melee
-                    HandleMelee(gamePadState.IsButtonDown(Buttons.B), Direction.Down);
+                    HandleMelee(gamePadState.IsButtonDown(meleeButton), Direction.Down);
                 }
 
                 if (gamePadState.ThumbSticks.Left.X < -xThumbStickThreshold)
@@ -136,13 +188,13 @@ namespace STFU
                     player.MoveLeft(-gamePadState.ThumbSticks.Left.X, dt);
 
                     // shoot left
-                    HandleShoot(gamePadState.IsButtonDown(Buttons.X), Direction.Left);
+                    HandleShoot(gamePadState.IsButtonDown(shootButton), Direction.Left);
 
                     // melee left
-                    HandleMelee(gamePadState.IsButtonDown(Buttons.B), Direction.Left);
+                    HandleMelee(gamePadState.IsButtonDown(meleeButton), Direction.Left);
 
                     // dash left
-                    HandleDash(gamePadState.IsButtonDown(Buttons.RightShoulder), Direction.Left);
+                    HandleDash(gamePadState.IsButtonDown(dashButton), Direction.Left);
                 }
                 else if (gamePadState.ThumbSticks.Left.X > xThumbStickThreshold)
                 {
@@ -150,13 +202,13 @@ namespace STFU
                     player.MoveRight(gamePadState.ThumbSticks.Left.X, dt);
 
                     // shoot right
-                    HandleShoot(gamePadState.IsButtonDown(Buttons.X), Direction.Right);
+                    HandleShoot(gamePadState.IsButtonDown(shootButton), Direction.Right);
 
                     // melee right
-                    HandleMelee(gamePadState.IsButtonDown(Buttons.B), Direction.Right);
+                    HandleMelee(gamePadState.IsButtonDown(meleeButton), Direction.Right);
 
                     // dash right
-                    HandleDash(gamePadState.IsButtonDown(Buttons.RightShoulder), Direction.Right);
+                    HandleDash(gamePadState.IsButtonDown(dashButton), Direction.Right);
                 }
                 else
                 {
@@ -164,16 +216,16 @@ namespace STFU
                     player.StopMoving(dt);
 
                     // shoot
-                    HandleShoot(gamePadState.IsButtonDown(Buttons.X), Direction.None);
+                    HandleShoot(gamePadState.IsButtonDown(shootButton), Direction.None);
 
                     // melee
-                    HandleMelee(gamePadState.IsButtonDown(Buttons.B), Direction.None);
+                    HandleMelee(gamePadState.IsButtonDown(meleeButton), Direction.None);
 
                     // dash
-                    HandleDash(gamePadState.IsButtonDown(Buttons.RightShoulder), Direction.None);
+                    HandleDash(gamePadState.IsButtonDown(dashButton), Direction.None);
                 }
 
-                HandleJump(gamePadState.IsButtonDown(Buttons.A), dt);
+                HandleJump(gamePadState.IsButtonDown(jumpButton), dt);
             }
             else
             {

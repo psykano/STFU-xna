@@ -34,6 +34,8 @@ namespace STFU
         protected Vector2 eyesOffset;
         private const float showRespawningTime = 1.5f;
 
+        protected const float enemyLayerDepth = 0.2f;
+
         // Constructor
         public EnemyRepresentation(TEnemy enemy, EnemyEvent enemyEvent)
             : base(enemy)
@@ -67,29 +69,38 @@ namespace STFU
 
         public override void Draw(SpriteBatch spriteBatch)
         {
-            // Draw the enemy
-            if (!blink)
+            if (!enemy.Health.Dead)
             {
-                if (!enemy.Health.Dead)
+                if (blink)
+                {
+                    // Draw the current animation and eyes
+                    currentAnimation.DrawWithColor(spriteBatch, blinkColor);
+                    if (currentEyesFrame != null)
+                    {
+                        currentEyesFrame.DrawWithColor(spriteBatch, blinkColor);
+                    }
+                }
+                else
                 {
                     // Draw the current animation and eyes
                     currentAnimation.Draw(spriteBatch);
                     if (currentEyesFrame != null)
                     {
                         currentEyesFrame.Draw(spriteBatch);
-                        currentEyesFrame.LayerDepth = currentAnimation.LayerDepth - 0.001f;
                     }
                 }
-                else
+            }
+            else
+            {
+                // Draw the enemy respawning
+                if (enemy.Health.RespawnTimer.Time() < showRespawningTime)
                 {
-                    // Draw the enemy respawning
-                    if (enemy.Health.RespawnTimer.Time() < showRespawningTime)
+                    if (!blink)
                     {
                         currentAnimation.Draw(spriteBatch);
                         if (currentEyesFrame != null)
                         {
                             currentEyesFrame.Draw(spriteBatch);
-                            currentEyesFrame.LayerDepth = currentAnimation.LayerDepth - 0.001f;
                         }
                     }
                 }

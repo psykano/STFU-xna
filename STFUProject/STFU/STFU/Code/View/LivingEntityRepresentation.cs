@@ -22,6 +22,7 @@ namespace STFU
         // for blinking
         protected bool blink;
         protected Timer blinkTimer;
+        protected Color blinkColor;
         protected const float blinkDelay = 0.0314f;
 
         // for shaking
@@ -36,6 +37,7 @@ namespace STFU
             this.livingEntity = livingEntity;
             blink = false;
             blinkTimer = new Timer();
+            blinkColor = new Color(255, 255, 255, 0);
             randomShake = new Random();
             shakePositionOffset = Vector2.Zero;
             shakeTimer = new Timer();
@@ -49,7 +51,7 @@ namespace STFU
 
         protected void checkBlink(float dt)
         {
-            if (livingEntity.Health.Recovering || livingEntity.Health.Dead)
+            if (livingEntity.Health.Hit || livingEntity.Health.Recovering || livingEntity.Health.Dead)
             {
                 doBlink(dt);
             }

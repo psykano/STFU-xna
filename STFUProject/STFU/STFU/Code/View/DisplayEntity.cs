@@ -83,5 +83,15 @@ namespace STFU
                 color.A = (byte)(value * 255f);
             }
         }
+
+        // Override these
+
+        public virtual void Draw(SpriteBatch spriteBatch)
+        {
+        }
+
+        public virtual void DrawWithColor(SpriteBatch spriteBatch, Color drawColor)
+        {
+        }
     }
 }

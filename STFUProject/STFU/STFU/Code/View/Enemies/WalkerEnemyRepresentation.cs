@@ -58,6 +58,7 @@ namespace STFU
             int idleFrameTime = 30;
             idleAnimation = new Animation();
             idleAnimation.Initialize(spriteSheet, Vector2.Zero, idleAnimationName, idleFrameTime, this.color, 1, spriteEffects, false);
+            idleAnimation.LayerDepth = enemyLayerDepth;
             // make this the current animation
             currentAnimation = idleAnimation;
 
@@ -65,44 +66,53 @@ namespace STFU
             int walkFrameTime = 40;
             walkAnimation = new Animation();
             walkAnimation.Initialize(spriteSheet, Vector2.Zero, walkAnimationName, walkFrameTime, this.color, 1, spriteEffects, true);
+            walkAnimation.LayerDepth = enemyLayerDepth;
 
             // run animation
             int runFrameTime = 30;
             runAnimation = new Animation();
             runAnimation.Initialize(spriteSheet, Vector2.Zero, runAnimationName, runFrameTime, this.color, 1, spriteEffects, true);
+            runAnimation.LayerDepth = enemyLayerDepth;
 
             // fall animation
             int fallFrameTime = 120;
             fallAnimation = new Animation();
             fallAnimation.Initialize(spriteSheet, Vector2.Zero, fallAnimationName, fallFrameTime, this.color, 1, spriteEffects, false);
+            fallAnimation.LayerDepth = enemyLayerDepth;
 
             // hit animation
             int hitFrameTime = 30;
             hitAnimation = new Animation();
             hitAnimation.Initialize(spriteSheet, Vector2.Zero, hitAnimationName, hitFrameTime, this.color, 1, spriteEffects, true);
+            hitAnimation.LayerDepth = enemyLayerDepth;
 
             // Load eyes:
             // idle eyes
             eyesIdleFrame = new Frame();
             eyesIdleFrame.Initialize(spriteSheet, Vector2.Zero, eyesIdleFrameName, Color.White, 1, spriteEffects);
+            eyesIdleFrame.LayerDepth = enemyLayerDepth - 0.001f;
             // make this the current eyes frame
             currentEyesFrame = eyesIdleFrame;
 
             // forward eyes
             eyesForwardFrame = new Frame();
             eyesForwardFrame.Initialize(spriteSheet, Vector2.Zero, eyesForwardFrameName, Color.White, 1, spriteEffects);
+            eyesForwardFrame.LayerDepth = enemyLayerDepth - 0.001f;
 
             // big eyes
             eyesBigFrame = new Frame();
             eyesBigFrame.Initialize(spriteSheet, Vector2.Zero, eyesBigFrameName, Color.White, 1, spriteEffects);
+            eyesBigFrame.LayerDepth = enemyLayerDepth - 0.001f;
 
             // sad eyes
             eyesSadFrame = new Frame();
             eyesSadFrame.Initialize(spriteSheet, Vector2.Zero, eyesSadFrameName, Color.White, 1, spriteEffects);
+            eyesSadFrame.LayerDepth = enemyLayerDepth - 0.001f;
 
             // down eyes
             eyesDownFrame = new Frame();
             eyesDownFrame.Initialize(spriteSheet, Vector2.Zero, eyesDownFrameName, Color.White, 1, spriteEffects);
+            eyesDownFrame.LayerDepth = enemyLayerDepth - 0.001f;
         }
 
         protected override void updateWhenAlive(float dt)
