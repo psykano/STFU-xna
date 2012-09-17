@@ -33,21 +33,5 @@ namespace STFU
             Height = SourceRect.Height;
             origin = new Vector2(Width * 0.5f, Height * 0.5f);
         }
-
-        // Draw the Frame
-        public override void Draw(SpriteBatch spriteBatch)
-        {
-            DrawWithColor(spriteBatch, Color);
-        }
-
-        public override void DrawWithColor(SpriteBatch spriteBatch, Color drawColor)
-        {
-            if (!isVisible())
-                return;
-
-            DestinationRect = new Rectangle((int)Position.X, (int)Position.Y, (int)(Width * Scale), (int)(Height * Scale));
-
-            spriteBatch.Draw(SpriteSheet.Sheet, DestinationRect, SourceRect, drawColor * Opacity, Rotation, origin, SpriteEffects, LayerDepth);
-        }
     }
 }

@@ -84,14 +84,34 @@ namespace STFU
             }
         }
 
-        // Override these
-
-        public virtual void Draw(SpriteBatch spriteBatch)
+        public void Draw(SpriteBatch spriteBatch)
         {
+            if (!isVisible())
+                return;
+
+            draw(spriteBatch, SpriteSheet.Sheet, Color);
         }
 
-        public virtual void DrawWithColor(SpriteBatch spriteBatch, Color drawColor)
+        public void DrawOpaque(SpriteBatch spriteBatch)
         {
+            if (!isVisible())
+                return;
+
+            draw(spriteBatch, SpriteSheet.WhiteSheet, Color);
+        }
+
+        public void DrawOpaqueWithColor(SpriteBatch spriteBatch, Color drawColor)
+        {
+            if (!isVisible())
+                return;
+
+            draw(spriteBatch, SpriteSheet.WhiteSheet, drawColor);
+        }
+
+        protected void draw(SpriteBatch spriteBatch, Texture2D texture2D, Color drawColor)
+        {
+            DestinationRect = new Rectangle((int)Position.X, (int)Position.Y, (int)(Width * Scale), (int)(Height * Scale));
+            spriteBatch.Draw(texture2D, DestinationRect, SourceRect, drawColor * Opacity, Rotation, origin, SpriteEffects, LayerDepth);
         }
     }
 }

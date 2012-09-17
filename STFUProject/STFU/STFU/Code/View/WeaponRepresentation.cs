@@ -96,12 +96,12 @@ namespace STFU
             }
         }
 
-        public void DrawWithColor(SpriteBatch spriteBatch, Color drawColor)
+        public void DrawOpaqueWithColor(SpriteBatch spriteBatch, Color drawColor)
         {
             // Draw the weapon with a specific color
             if (this.WeaponAnimation.Active)
             {
-                this.WeaponAnimation.DrawWithColor(spriteBatch, drawColor);
+                this.WeaponAnimation.DrawOpaqueWithColor(spriteBatch, drawColor);
             }
         }
 

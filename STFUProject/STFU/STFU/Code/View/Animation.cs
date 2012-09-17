@@ -149,26 +149,7 @@ namespace STFU
             Height = SourceRect.Height;
             origin.X = Width * 0.5f;
             origin.Y = Height * 0.5f;
-
-            // Place the frame in the correct location on the screen
-            DestinationRect = new Rectangle((int)Position.X, (int)Position.Y, (int)(Width * Scale), (int)(Height * Scale));
         }
-
-
-        // Draw the Animation Strip
-        public override void Draw(SpriteBatch spriteBatch)
-        {
-            DrawWithColor(spriteBatch, Color);
-        }
-
-        public override void DrawWithColor(SpriteBatch spriteBatch, Color drawColor)
-        {
-            if (!isVisible())
-                return;
-
-            spriteBatch.Draw(SpriteSheet.Sheet, DestinationRect, SourceRect, drawColor * Opacity, Rotation, origin, SpriteEffects, LayerDepth);
-        }
-
 
         // Reset the animation
         public void Reset()

@@ -312,16 +312,16 @@ namespace STFU
                 if (blink)
                 {
                     // Draw the current animation
-                    currentAnimation.DrawWithColor(spriteBatch, blinkColor);
+                    currentAnimation.DrawOpaqueWithColor(spriteBatch, blinkColor);
 
                     // Draw the eyes
-                    eyesFrame.DrawWithColor(spriteBatch, blinkColor);
+                    eyesFrame.DrawOpaqueWithColor(spriteBatch, blinkColor);
 
                     // Draw the weapons if the player isn't hit
                     if (!player.Health.Hit)
                     {
-                        gunRepresentation.DrawWithColor(spriteBatch, blinkColor);
-                        swordRepresentation.DrawWithColor(spriteBatch, blinkColor);
+                        gunRepresentation.DrawOpaqueWithColor(spriteBatch, blinkColor);
+                        swordRepresentation.DrawOpaqueWithColor(spriteBatch, blinkColor);
                     }
                 }
                 else
@@ -346,7 +346,7 @@ namespace STFU
             swordRepresentation.DrawBullets(spriteBatch);
 
             // Draw the dash trails
-            dashTrailEmitter.Draw(spriteBatch);
+            dashTrailEmitter.DrawOpaque(spriteBatch);
         }
 
         private void adjustEyesOffset()

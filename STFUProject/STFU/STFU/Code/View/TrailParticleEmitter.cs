@@ -39,7 +39,7 @@ namespace STFU
             {
                 if (!particle.Active)
                 {
-                    particle.ActivateWithDisplayEntity(displayEntity, particleLifetime, true, true, 1f, 0.6f);
+                    particle.ActivateWithDisplayEntity(displayEntity, particleLifetime, true, true, 0.6f, 0.7f);
                     break;
                 }
             }
@@ -87,6 +87,15 @@ namespace STFU
             {
                 if (particle.Active)
                     particle.Draw(spriteBatch);
+            }
+        }
+
+        public void DrawOpaque(SpriteBatch spriteBatch)
+        {
+            foreach (Particle particle in particles)
+            {
+                if (particle.Active)
+                    particle.DrawOpaque(spriteBatch);
             }
         }
 

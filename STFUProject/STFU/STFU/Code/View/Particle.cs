@@ -83,16 +83,5 @@ namespace STFU
                 this.Active = false;
             }
         }
-
-        // Draw the particle
-        public void Draw(SpriteBatch spriteBatch)
-        {
-            if (!isVisible())
-                return;
-
-            DestinationRect = new Rectangle((int)Position.X, (int)Position.Y, (int)(Width * Scale), (int)(Height * Scale));
-
-            spriteBatch.Draw(SpriteSheet.Sheet, DestinationRect, SourceRect, Color * Opacity, Rotation, origin, SpriteEffects, LayerDepth);
-        }
     }
 }

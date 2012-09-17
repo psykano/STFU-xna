@@ -74,10 +74,10 @@ namespace STFU
                 if (blink)
                 {
                     // Draw the current animation and eyes
-                    currentAnimation.DrawWithColor(spriteBatch, blinkColor);
+                    currentAnimation.DrawOpaqueWithColor(spriteBatch, blinkColor);
                     if (currentEyesFrame != null)
                     {
-                        currentEyesFrame.DrawWithColor(spriteBatch, blinkColor);
+                        currentEyesFrame.DrawOpaqueWithColor(spriteBatch, blinkColor);
                     }
                 }
                 else

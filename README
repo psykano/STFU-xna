@@ -6,16 +6,18 @@ In the meantime, there's a prototype of the game with multiplayer functionality 
 XNA Game Studio is required to compile the source.
 XNA 4.0 Redistributable and the .NET framework are required to run the game.
 
-Up to four Xbox 360 controllers can be used for four different players.
-Otherwise, keyboard controls are
+Up to four Xbox 360 controllers can be used for four different players. Controls can be remapped in InputSettings.ini.
+Otherwise, default keyboard controls are
 For player 1:
 - Arrow keys for movement
+- B is dash
 - N is jump
 - M is gun
 - , is sword
 
 For player 2:
 - WASD for movement
+- `(tilde) is dash
 - Tab is jump
 - Q is gun
 - 1 is sword
@@ -30,4 +32,6 @@ Some more keys that do stuff are
 - F10: show the physics debug view
 
 Additional info:
-to be completed ***
+I apologize for the overall lack of comments and hacky physics code. Originally, this was going to be a prototype for testing out XNA and Farseer. It turned out a lot better than expected and so I decided to turn it into a full-fledged open source game.
+You might also notice the lack of design documentation or any kind of documentation. That's because I use an incremental development method, setting smaller goals rather than larger ones so I can push out working builds more often. I have some principles I'd like to maintain and some general ideas of where I'd like to drive the game but nothing is set in stone. Using this strategy, I try to keep things abstract but not to the point of creating a game engine.
+You'll also notice the lack of sound. That's because I have very little knowledge of sound design. So while I'd like to get to that eventually, it's being put off right now. I'd like to go with 8-bit sound effects and music.
