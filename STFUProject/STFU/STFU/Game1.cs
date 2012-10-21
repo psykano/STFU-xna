@@ -69,6 +69,9 @@ namespace STFU
         private const float fixedTimestep = 1/30f;
         private const int maxSteps = 1;
 
+        public int GameWidth { get; private set; }
+        public int GameHeight { get; private set; }
+
         public Game1()
         {
             ConfigFile configFile = new ConfigFile(gameSettingsIni);
@@ -78,6 +81,10 @@ namespace STFU
             defaultResolutionHeight = configFile.SettingGroups[engineSettings].Settings["defaultResolutionHeight"].GetValueAsInt();
             enableDebugging = configFile.SettingGroups[engineSettings].Settings["enableDebugging"].GetValueAsBool();
             this.ShowDebugView = false;
+
+            // default game resolution
+            GameHeight = defaultResolutionHeight;
+            GameWidth = (GameHeight * 16) / 9;
 
             // video settings
             graphics = new GraphicsDeviceManager(this);
@@ -174,7 +181,7 @@ namespace STFU
 
             GameVariables.LevelHeight = map.LevelMap.Height;
             GameVariables.EnemyRespawnDelay = 10f;
-            GameVariables.CamCulling = new Vector2(640 * 0.5f, 360 * 0.5f);
+            GameVariables.CamCulling = new Vector2(GameWidth * 0.5f, GameHeight * 0.5f);
 
             // create the players
             int numPlayers = GameVariables.NumPlayers;
@@ -247,19 +254,19 @@ namespace STFU
         {
             float targetAspectRatio = 16 / 9f;
             // figure out the largest area that fits in this resolution at the desired aspect ratio     
-            int width = GraphicsDevice.PresentationParameters.BackBufferWidth;
+            int width = GameWidth;
             int height = (int)(width / targetAspectRatio + .5f);
-            if (height > GraphicsDevice.PresentationParameters.BackBufferHeight)
+            if (height > GameHeight)
             {
-                height = GraphicsDevice.PresentationParameters.BackBufferHeight;
+                height = GameHeight;
                 width = (int)(height * targetAspectRatio + .5f);
             }
 
             // set up the new viewport centered in the backbuffer     
             GraphicsDevice.Viewport = new Viewport
             {
-                X = GraphicsDevice.PresentationParameters.BackBufferWidth / 2 - width / 2,
-                Y = GraphicsDevice.PresentationParameters.BackBufferHeight / 2 - height / 2,
+                X = GameWidth / 2 - width / 2,
+                Y = GameHeight / 2 - height / 2,
                 Width = width,
                 Height = height,
                 MinDepth = 0,
@@ -280,9 +287,12 @@ namespace STFU
                 topRightViewport.Width = topRightViewport.Width / 2 - 2;
                 topRightViewport.Height = topRightViewport.Height / 2 - 2;
 
-                topLeftViewport.X += defaultViewport.Width / 4;
+                topLeftViewport.X += defaultViewport.Width / 4 + 1; // the +1 fixes a graphical artifact
                 topRightViewport.X += topLeftViewport.X;
-                topRightViewport.Y += defaultViewport.Height / 2 + 2;
+                topRightViewport.Y += topRightViewport.Height + 2;
+
+                //topLeftViewport.X -= 1;
+                //topRightViewport.X -= 1;
             }
             else if (numPlayers >= 3)
             {
@@ -426,105 +436,53 @@ namespace STFU
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            // physics debugging view
-            if (this.ShowDebugView)
-            {
-                GraphicsDevice.Viewport = defaultViewport;
-                GraphicsDevice.Clear(new Color(50, 50, 50));
+            // the RenderTarget2D that we will draw to
+            RenderTarget2D renderTarget = new RenderTarget2D(GraphicsDevice, GameWidth, GameHeight);
+            // change the scale of our rendered scene to the backbuffer
+            float renderTargetScale = renderTargetScreenRatio();
 
-                GraphicsDevice.Viewport = topLeftViewport;
-                DrawDebugScene(0);
-                int numPlayers = GameVariables.NumPlayers;
-                if (numPlayers > 1)
-                {
-                    GraphicsDevice.Viewport = topRightViewport;
-                    DrawDebugScene(1);
-                }
-                if (numPlayers > 2)
-                {
-                    GraphicsDevice.Viewport = bottomLeftViewport;
-                    DrawDebugScene(2);
-                }
-                if (numPlayers > 3)
+            // Draw to the renderTarget instead of the back buffer
+            GraphicsDevice.SetRenderTarget(renderTarget);
+            GraphicsDevice.Clear(Color.Transparent);
+
+            // draw the scene
+            GraphicsDevice.Viewport = topLeftViewport;
+            DrawScene(0);
+            int numPlayers = GameVariables.NumPlayers;
+            if (numPlayers > 1)
+            {
+                GraphicsDevice.Viewport = topRightViewport;
+                DrawScene(1);
+            }
+            if (numPlayers > 2)
+            {
+                GraphicsDevice.Viewport = bottomLeftViewport;
+                DrawScene(2);
+
+                if (numPlayers == 3)
                 {
                     GraphicsDevice.Viewport = bottomRightViewport;
-                    DrawDebugScene(3);
+                    DrawActionScene();
                 }
             }
-
-
-            // NO DEBUG
-            /*
-            GraphicsDevice.Viewport = defaultViewport;
-            Color color = new Color(200, 200, 200);
-            GraphicsDevice.Clear(color);
-
-            GraphicsDevice.Viewport = leftViewport;
-            //DrawScene(gameTime, Camera1.ViewMatrix, halfprojectionMatrix);
-            spriteBatch.Begin(SpriteSortMode.BackToFront,
-                        BlendState.AlphaBlend,
-                        null,
-                        null,
-                        null,
-                        null,
-                        player1Representation.Cam.View);
-            mapRepresentation.Draw(spriteBatch);
-            player1Representation.Draw(spriteBatch);
-            player2Representation.Draw(spriteBatch);
-            enemyRepresentation.Draw(spriteBatch);
-            spriteBatch.End();
-
-
-
-            GraphicsDevice.Viewport = rightViewport;
-            //DrawScene(gameTime, Camera2.ViewMatrix, halfprojectionMatrix);
-            spriteBatch.Begin(SpriteSortMode.BackToFront,
-                        BlendState.AlphaBlend,
-                        null,
-                        null,
-                        null,
-                        null,
-                        player2Representation.Cam.View);
-            mapRepresentation.Draw(spriteBatch);
-            player1Representation.Draw(spriteBatch);
-            player2Representation.Draw(spriteBatch);
-            enemyRepresentation.Draw(spriteBatch);
-            spriteBatch.End();
-             */
-
-            if (!this.ShowDebugView)
+            if (numPlayers > 3)
             {
-                GraphicsDevice.Viewport = defaultViewport;
-                //Color color = new Color(210, 210, 210); // old
-                Color color = new Color(30, 30, 30); // the color of the line for splitscreen
-                GraphicsDevice.Clear(color);
-
-                GraphicsDevice.Viewport = topLeftViewport;
-                DrawScene(0);
-                int numPlayers = GameVariables.NumPlayers;
-                if (numPlayers > 1)
-                {
-                    GraphicsDevice.Viewport = topRightViewport;
-                    DrawScene(1);
-                }
-                if (numPlayers > 2)
-                {
-                    GraphicsDevice.Viewport = bottomLeftViewport;
-                    DrawScene(2);
-
-                    // todo ***
-                    //if (numPlayers == 3)
-                    //{
-                    //    GraphicsDevice.Viewport = bottomRightViewport;
-                    //    DrawActionScene();
-                    //}
-                }
-                if (numPlayers > 3)
-                {
-                    GraphicsDevice.Viewport = bottomRightViewport;
-                    DrawScene(3);
-                }
+                GraphicsDevice.Viewport = bottomRightViewport;
+                DrawScene(3);
             }
+
+            // Now switch back to the back buffer as our rendering target
+            GraphicsDevice.SetRenderTarget(null);
+            GraphicsDevice.Clear(Color.Transparent);
+            spriteBatch.Begin(SpriteSortMode.BackToFront,
+                    BlendState.AlphaBlend,
+                    SamplerState.PointClamp,
+                    null,
+                    null);
+
+            // Draw our renderTarget to the back buffer
+            spriteBatch.Draw(renderTarget, new Vector2(GraphicsDevice.PresentationParameters.BackBufferWidth / 2, GraphicsDevice.PresentationParameters.BackBufferHeight / 2), null, Color.White, 0f, new Vector2(renderTarget.Width / 2, renderTarget.Height / 2), renderTargetScale, SpriteEffects.None, 0f);
+            spriteBatch.End();
 
             base.Draw(gameTime);
         }
@@ -536,15 +494,14 @@ namespace STFU
             
             // depends on the current resolution
             playerRepresentation.Cam.Zoom = resolutionRatio();
-            if (GameVariables.NumPlayers == 1)
+            if (GameVariables.NumPlayers != 1)
             {
-                playerRepresentation.Cam.Zoom *= 2;
+                playerRepresentation.Cam.Zoom /= 2;
             }
-
 
             // Draw the parallax background
             
-            playerRepresentation.Cam.Parallax = 0.66f;
+            playerRepresentation.Cam.Parallax = 0.5f; // has to be a value which agrees with the camera pan at the low internal resolution
             spriteBatch.Begin(SpriteSortMode.BackToFront,
                         BlendState.AlphaBlend,
                         SamplerState.PointClamp,
@@ -572,6 +529,12 @@ namespace STFU
             GameVariables.CamPosition = playerRepresentation.Cam.Position;
             representationManager.Draw(spriteBatch);
             spriteBatch.End();
+
+            // Draw the debug scene overtop
+            if (this.ShowDebugView)
+            {
+                DrawDebugScene(playerIndex);
+            }
         }
 
         protected void DrawDebugScene(int playerIndex)
@@ -580,9 +543,9 @@ namespace STFU
             PlayerRepresentation playerRepresentation = representationManager.GetPlayerRepresentationWithIndex((PlayerIndex)playerIndex);
 
             playerRepresentation.Cam.Zoom = resolutionRatio();
-            if (GameVariables.NumPlayers == 1)
+            if (GameVariables.NumPlayers != 1)
             {
-                playerRepresentation.Cam.Zoom *= 2;
+                playerRepresentation.Cam.Zoom /= 2;
             }
 
             //Matrix _projection = Matrix.CreateOrthographicOffCenter(0f, ConvertUnits.ToSimUnits(GraphicsDevice.Viewport.Width), ConvertUnits.ToSimUnits(GraphicsDevice.Viewport.Height), 0f, 0f, 1f);
@@ -591,22 +554,45 @@ namespace STFU
             DebugView.RenderDebugData(ref _projection, ref _view);
         }
 
+        protected void DrawActionScene()
+        {
+            // here ***
+            // refactor DrawScene to use a camera2D as a param
+            // add an ActionCam to PlayerRepresentation and use that as the param to DrawScene here
+        }
+
         protected float resolutionRatio()
         {
             return (float)defaultViewport.Height / defaultResolutionHeight;
+        }
+
+        protected float renderTargetScreenRatio()
+        {
+            return (float)this.Window.ClientBounds.Width / GameWidth;
+        }
+
+        protected void changeGameHeight(int height)
+        {
+            GameHeight = height;
+            GameWidth = (height * 16) / 9;
         }
 
         // Drop-in
         public void AddPlayer()
         {
             int numPlayers = GameVariables.NumPlayers;
-            if (numPlayers < 4)
+            if (numPlayers >= 4)
             {
-                numPlayers++;
-                GameVariables.NumPlayers = numPlayers;
-            }
-            else
                 return;
+            }
+
+            numPlayers++;
+            GameVariables.NumPlayers = numPlayers;
+
+            if (numPlayers > 1)
+            {
+                changeGameHeight(defaultResolutionHeight * 2);
+            }
 
             PlayerIndex playerIndex;
             if (numPlayers > 3)
@@ -656,6 +642,11 @@ namespace STFU
             
             numPlayers--;
             GameVariables.NumPlayers = numPlayers;
+
+            if (numPlayers < 2)
+            {
+                changeGameHeight(defaultResolutionHeight);
+            }
 
             SetUpSplitScreen();
             ResetPlayerCameras();
@@ -807,9 +798,6 @@ namespace STFU
                 graphics.PreferredBackBufferWidth = 1280;
                 graphics.PreferredBackBufferHeight = 720;
                 graphics.ApplyChanges();
-
-                game.SetUpSplitScreen();
-                game.ResetPlayerCameras();
             }
             else
             {
@@ -848,8 +836,6 @@ namespace STFU
                 }
 
                 graphics.ApplyChanges();
-                game.SetUpSplitScreen();
-                game.ResetPlayerCameras();
 
                 debugString = string.Format("{0} x {1}", game.Window.ClientBounds.Width, game.Window.ClientBounds.Height);
             }

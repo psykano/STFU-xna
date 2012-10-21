@@ -392,11 +392,18 @@ namespace STFU
 
             //_currentPosition += 100f * delta * inertia * dt; old
 
+            /* old
             float scrollX = 800f * delta.X * inertia * dt;
-            //float scrollY = 500f * delta.Y * inertia * dt; old
             float scrollY = 600f * delta.Y * inertia * dt;
 
             // when not using antialiased rendering
+            scrollX = (float)Math.Round(scrollX, 2);
+            scrollY = (float)Math.Round(scrollY, 2);
+             */
+
+            float scrollX = (int)(800f * delta.X * inertia) * dt;
+            float scrollY = (int)(600f * delta.Y * inertia) * dt;
+
             scrollX = (float)Math.Round(scrollX, 2);
             scrollY = (float)Math.Round(scrollY, 2);
 
